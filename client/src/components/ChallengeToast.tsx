@@ -4,6 +4,7 @@ import { toast } from "@/hooks/use-toast";
 import { useTranslation } from "react-i18next";
 import { UserChallengeData } from "@/lib/types";
 import { usePoopContext } from "@/context/PoopContext";
+import { apiRequest } from "@/lib/queryClient";
 
 export function useChallengeToast() {
   const { t } = useTranslation();
@@ -12,11 +13,10 @@ export function useChallengeToast() {
   
   const checkForCompletedChallenges = async () => {
     try {
-      // Fetch completed challenges
-      const response = await fetch('/api/user-challenges');
-      if (!response.ok) return;
-      
-      const data = await response.json();
+      // Fetch completed challenges using apiRequest instead of fetch
+      const response = await apiRequest('/api/user-challenges', 'GET');
+      // Ensure data is an array
+      const data = Array.isArray(response) ? response : [];
       const completedChallenges = data.filter((c: UserChallengeData) => 
         c.isCompleted && c.completedAt
       );
