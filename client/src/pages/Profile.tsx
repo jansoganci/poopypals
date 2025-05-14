@@ -4,8 +4,9 @@ import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
-import { Bell, Moon, Globe, Lock, HelpCircle, LogOut } from "lucide-react";
+import { Bell, Globe, Lock, HelpCircle, LogOut } from "lucide-react";
 import { usePoopContext } from "@/context/PoopContext";
+import ThemeToggle from "@/components/ThemeToggle";
 
 export default function Profile() {
   const { stats } = usePoopContext();
@@ -52,13 +53,7 @@ export default function Profile() {
           
           <Separator />
           
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <Moon className="h-5 w-5 text-muted-foreground" />
-              <Label htmlFor="dark-mode">Dark Mode</Label>
-            </div>
-            <Switch id="dark-mode" />
-          </div>
+          <ThemeToggle />
           
           <Separator />
           
