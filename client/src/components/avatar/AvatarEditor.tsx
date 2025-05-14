@@ -80,12 +80,29 @@ export default function AvatarEditor({ userId }: AvatarEditorProps) {
       eyesId: selectedEyes,
       mouthId: selectedMouth,
       accessoryId: selectedAccessory,
+    }, {
+      onSuccess: () => {
+        // Find the DOM element with role="dialog" and its close button
+        const dialog = document.querySelector('[role="dialog"]');
+        if (dialog) {
+          const closeButton = dialog.querySelector('button[aria-label="Close"]');
+          if (closeButton) {
+            (closeButton as HTMLButtonElement).click();
+          }
+        }
+      }
     });
   };
 
   // Check if a component is unlocked for the user
   const isUnlocked = (componentId: number) => {
+    // Default components are always unlocked
+    if (componentId === 1 || componentId === 5 || componentId === 9) return true;
+    
+    // If we don't have user components yet, assume it's locked
     if (!userComponents) return false;
+    
+    // Check if the component is in the user's unlocked components
     return userComponents.some((c: any) => c.componentId === componentId);
   };
 

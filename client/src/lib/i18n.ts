@@ -67,6 +67,8 @@ const resources = {
       
       // Profile page
       "edit_profile": "Edit Profile",
+      "customize_avatar": "Customize Avatar",
+      "customize_avatar_description": "Choose your head, eyes, mouth and accessories to create your unique avatar.",
       "settings": "Settings",
       "notifications": "Notifications",
       "dark_mode": "Dark Mode",
