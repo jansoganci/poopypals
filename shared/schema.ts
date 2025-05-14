@@ -1,6 +1,9 @@
-import { pgTable, text, serial, integer, boolean, timestamp, jsonb } from "drizzle-orm/pg-core";
+import { pgTable, text, serial, integer, boolean, timestamp, jsonb, pgEnum } from "drizzle-orm/pg-core";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
+
+// Create a component type enum
+export const componentTypeEnum = pgEnum('component_type', ['head', 'eyes', 'mouth', 'accessory']);
 
 export const users = pgTable("users", {
   id: serial("id").primaryKey(),
@@ -98,8 +101,64 @@ export type InsertUser = z.infer<typeof insertUserSchema>;
 export type InsertChallenge = z.infer<typeof insertChallengeSchema>;
 export type InsertUserChallenge = z.infer<typeof insertUserChallengeSchema>;
 
+// Avatar component tables
+export const avatarComponents = pgTable("avatar_components", {
+  id: serial("id").primaryKey(),
+  name: text("name").notNull(),
+  type: componentTypeEnum("type").notNull(),
+  svgPath: text("svg_path").notNull(),
+  cost: integer("cost").default(0).notNull(),
+  unlockCondition: text("unlock_condition"),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
+export const userAvatarComponents = pgTable("user_avatar_components", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").notNull(),
+  componentId: integer("component_id").notNull(),
+  unlockedAt: timestamp("unlocked_at").defaultNow().notNull(),
+});
+
+export const userAvatars = pgTable("user_avatars", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").notNull().unique(),
+  headId: integer("head_id"),
+  eyesId: integer("eyes_id"),
+  mouthId: integer("mouth_id"),
+  accessoryId: integer("accessory_id"),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+});
+
+export const insertAvatarComponentSchema = createInsertSchema(avatarComponents).pick({
+  name: true,
+  type: true,
+  svgPath: true,
+  cost: true,
+  unlockCondition: true,
+});
+
+export const insertUserAvatarComponentSchema = createInsertSchema(userAvatarComponents).pick({
+  userId: true,
+  componentId: true,
+});
+
+export const insertUserAvatarSchema = createInsertSchema(userAvatars).pick({
+  userId: true,
+  headId: true,
+  eyesId: true,
+  mouthId: true,
+  accessoryId: true,
+});
+
 export type User = typeof users.$inferSelect;
 export type PoopLog = typeof poopLogs.$inferSelect;
 export type Achievement = typeof achievements.$inferSelect;
 export type Challenge = typeof challenges.$inferSelect;
 export type UserChallenge = typeof userChallenges.$inferSelect;
+export type AvatarComponent = typeof avatarComponents.$inferSelect;
+export type UserAvatarComponent = typeof userAvatarComponents.$inferSelect;
+export type UserAvatar = typeof userAvatars.$inferSelect;
+
+export type InsertAvatarComponent = z.infer<typeof insertAvatarComponentSchema>;
+export type InsertUserAvatarComponent = z.infer<typeof insertUserAvatarComponentSchema>;
+export type InsertUserAvatar = z.infer<typeof insertUserAvatarSchema>;

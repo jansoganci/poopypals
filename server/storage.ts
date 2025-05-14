@@ -1,7 +1,11 @@
 import { 
   users, poopLogs, achievements, challenges, userChallenges,
+  avatarComponents, userAvatarComponents, userAvatars,
   type User, type InsertUser, type PoopLog, type Achievement,
-  type Challenge, type InsertChallenge, type UserChallenge, type InsertUserChallenge
+  type Challenge, type InsertChallenge, type UserChallenge, type InsertUserChallenge,
+  type AvatarComponent, type InsertAvatarComponent, 
+  type UserAvatarComponent, type InsertUserAvatarComponent,
+  type UserAvatar, type InsertUserAvatar
 } from "@shared/schema";
 import { db } from "./db";
 import { eq, desc, and, gte, lte, sql } from "drizzle-orm";
@@ -36,6 +40,15 @@ export interface IStorage {
   
   // Stats methods
   getUserStats(): Promise<any>;
+  
+  // Avatar methods
+  createAvatarComponent(component: InsertAvatarComponent): Promise<AvatarComponent>;
+  getAvatarComponents(): Promise<AvatarComponent[]>;
+  getAvatarComponentsByType(type: string): Promise<AvatarComponent[]>;
+  getUserAvatarComponents(userId: number): Promise<(UserAvatarComponent & { component: AvatarComponent })[]>;
+  unlockAvatarComponentForUser(userId: number, componentId: number): Promise<UserAvatarComponent>;
+  getUserAvatar(userId: number): Promise<UserAvatar | undefined>;
+  updateUserAvatar(userId: number, avatarData: Partial<InsertUserAvatar>): Promise<UserAvatar>;
 }
 
 export class DatabaseStorage implements IStorage {
