@@ -1,9 +1,9 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { toast } from "@/hooks/use-toast";
 import { useTranslation } from "react-i18next";
 import { UserChallengeData } from "@/lib/types";
 import { usePoopContext } from "@/context/PoopContext";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useQueryClient, useQuery } from "@tanstack/react-query";
 
 export function useChallengeToast() {
   const { t } = useTranslation();
@@ -11,40 +11,44 @@ export function useChallengeToast() {
   const [lastChallengeCount, setLastChallengeCount] = useState(0);
   const queryClient = useQueryClient();
   
-  // Use React Query to get challenges and check for completions
-  useQuery({
+  // Get the challenge data from the cache without making a new query
+  const { data: challenges } = useQuery<UserChallengeData[]>({
     queryKey: ['/api/user-challenges', 'toast-check'],
     staleTime: 30000, // 30 seconds
     refetchInterval: 60000, // 1 minute
-    select: (data: UserChallengeData[]) => {
-      if (!Array.isArray(data)) return [];
-      
-      const completedChallenges = data.filter(c => c.isCompleted && c.completedAt);
-      
-      // If we have more completed challenges than before, show toast
-      if (completedChallenges.length > lastChallengeCount && lastChallengeCount > 0) {
-        // Find the newly completed challenges
-        const newlyCompleted = completedChallenges.slice(0, completedChallenges.length - lastChallengeCount);
-        
-        // Show toast for each newly completed challenge
-        newlyCompleted.forEach((challenge: UserChallengeData) => {
-          showChallengeCompletedToast(challenge);
-          
-          // Update stats (add reward)
-          if (stats) {
-            setStats({
-              ...stats,
-              flushFunds: stats.flushFunds + challenge.challenge.rewardAmount
-            });
-          }
-        });
-      }
-      
-      // Update the counter
-      setLastChallengeCount(completedChallenges.length);
-      return completedChallenges;
-    },
+    // Disable automatic queries, we'll handle this manually
+    enabled: false,
   });
+  
+  // Effect to check for completed challenges when challenges data changes
+  useEffect(() => {
+    if (!challenges || !Array.isArray(challenges)) return;
+    
+    const completedChallenges = challenges.filter(c => c.isCompleted && c.completedAt);
+    
+    // If we have more completed challenges than before, show toast
+    if (completedChallenges.length > lastChallengeCount && lastChallengeCount > 0) {
+      // Find the newly completed challenges (be cautious with the slice index calculation)
+      const newCount = completedChallenges.length - lastChallengeCount;
+      const newlyCompleted = completedChallenges.slice(0, newCount);
+      
+      // Show toast for each newly completed challenge
+      newlyCompleted.forEach((challenge: UserChallengeData) => {
+        showChallengeCompletedToast(challenge);
+        
+        // Update stats (add reward)
+        if (stats) {
+          setStats({
+            ...stats,
+            flushFunds: stats.flushFunds + challenge.challenge.rewardAmount
+          });
+        }
+      });
+    }
+    
+    // Update the counter
+    setLastChallengeCount(completedChallenges.length);
+  }, [challenges, lastChallengeCount, stats, setStats, t]);
   
   const showChallengeCompletedToast = (challenge: UserChallengeData) => {
     toast({
