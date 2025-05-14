@@ -26,7 +26,7 @@ export default function NotificationCenter() {
   const queryClient = useQueryClient();
   
   // Fetch notifications
-  const { data: notifications = [], isLoading } = useQuery({
+  const { data: notifications = [], isLoading } = useQuery<Notification[]>({
     queryKey: ['/api/notifications'],
     refetchInterval: 60000, // Refetch every minute
   });
@@ -112,7 +112,7 @@ export default function NotificationCenter() {
       </PopoverTrigger>
       <PopoverContent className="w-80 p-0" align="end">
         <div className="flex items-center justify-between p-4">
-          <h3 className="font-medium">{t('notifications')}</h3>
+          <h3 className="font-medium">{t('notifications_center')}</h3>
           <div className="flex gap-2">
             {unreadCount > 0 && (
               <Button 
@@ -133,7 +133,7 @@ export default function NotificationCenter() {
         <Separator />
         <div className="max-h-96 overflow-auto">
           {isLoading ? (
-            <div className="p-4 text-center text-muted-foreground">{t('loading')}</div>
+            <div className="p-4 text-center text-muted-foreground">{t('loading_notifications')}</div>
           ) : notifications.length === 0 ? (
             <div className="p-8 text-center text-muted-foreground">
               <Bell className="h-8 w-8 mx-auto mb-2 opacity-50" />

@@ -124,7 +124,7 @@ const resources = {
       "create_goals": "Create your own goals",
       
       // Notifications
-      "notifications": "Notifications",
+      "notifications_center": "Notifications",
       "no_notifications": "No notifications yet",
       "mark_read": "Mark as read",
       "mark_all_read": "Mark all as read",

@@ -55,10 +55,7 @@ export default function RemindersManager() {
   // Create reminder mutation
   const createReminderMutation = useMutation({
     mutationFn: async (data: ReminderFormValues) => {
-      return apiRequest('/api/reminders', {
-        method: 'POST',
-        body: JSON.stringify(data),
-      });
+      return apiRequest('/api/reminders', 'POST', data);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['/api/reminders'] });
@@ -80,10 +77,7 @@ export default function RemindersManager() {
   // Toggle reminder active state
   const toggleReminderMutation = useMutation({
     mutationFn: async ({ id, isActive }: { id: number, isActive: boolean }) => {
-      return apiRequest(`/api/reminders/${id}/toggle`, {
-        method: 'PATCH',
-        body: JSON.stringify({ isActive }),
-      });
+      return apiRequest(`/api/reminders/${id}/toggle`, 'PATCH', { isActive });
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['/api/reminders'] });
@@ -93,9 +87,7 @@ export default function RemindersManager() {
   // Delete reminder
   const deleteReminderMutation = useMutation({
     mutationFn: async (id: number) => {
-      return apiRequest(`/api/reminders/${id}`, {
-        method: 'DELETE',
-      });
+      return apiRequest(`/api/reminders/${id}`, 'DELETE');
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['/api/reminders'] });
