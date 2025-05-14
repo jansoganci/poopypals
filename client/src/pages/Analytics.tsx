@@ -74,8 +74,8 @@ const InsightCard = ({
   description: string, 
   icon: React.ElementType, 
   variant?: "default" | "warning" | "success" | "info",
-  action?: () => void,
-  actionText?: string
+  action?: (() => void) | undefined,
+  actionText?: string | undefined
 }) => {
   const getVariantStyles = () => {
     switch (variant) {
@@ -927,7 +927,7 @@ const HealthCorrelations = ({ logs }: { logs: any[] }) => {
 // Insights and Recommendations Component
 const InsightsRecommendations = ({ logs }: { logs: any[] }) => {
   const { t } = useTranslation();
-  const navigate = useNavigate();
+  const [, navigate] = useLocation();
   
   // Generate personalized insights based on data
   const generateInsights = () => {
@@ -939,7 +939,7 @@ const InsightsRecommendations = ({ logs }: { logs: any[] }) => {
         title: t('need_more_data'),
         description: t('need_more_data_description'),
         icon: Info,
-        variant: "info",
+        variant: "info" as const,
         action: () => navigate('/'),
         actionText: t('log_now')
       });
@@ -955,7 +955,7 @@ const InsightsRecommendations = ({ logs }: { logs: any[] }) => {
         title: t('hydration_recommendation'),
         description: t('hydration_recommendation_description'),
         icon: Droplets,
-        variant: "warning"
+        variant: "warning" as const
       });
     }
     
@@ -964,7 +964,7 @@ const InsightsRecommendations = ({ logs }: { logs: any[] }) => {
         title: t('fiber_recommendation'),
         description: t('fiber_recommendation_description'),
         icon: ArrowDownUp,
-        variant: "warning"
+        variant: "warning" as const
       });
     }
     
@@ -977,7 +977,7 @@ const InsightsRecommendations = ({ logs }: { logs: any[] }) => {
         title: t('reduce_toilet_time'),
         description: t('reduce_toilet_time_description'),
         icon: Timer,
-        variant: "warning"
+        variant: "warning" as const
       });
     }
     
@@ -994,7 +994,7 @@ const InsightsRecommendations = ({ logs }: { logs: any[] }) => {
         title: t('healthy_patterns'),
         description: t('healthy_patterns_description'),
         icon: Heart,
-        variant: "success"
+        variant: "success" as const
       });
     }
     
@@ -1007,7 +1007,7 @@ const InsightsRecommendations = ({ logs }: { logs: any[] }) => {
         title: t('improve_regularity'),
         description: t('improve_regularity_description'),
         icon: Calendar,
-        variant: "info"
+        variant: "info" as const
       });
     }
     
