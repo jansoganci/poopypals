@@ -48,7 +48,7 @@ export default function RemindersManager() {
   const queryClient = useQueryClient();
   
   // Fetch reminders
-  const { data: reminders = [], isLoading } = useQuery({
+  const { data: reminders = [], isLoading } = useQuery<Reminder[]>({
     queryKey: ['/api/reminders'],
   });
   
@@ -177,7 +177,7 @@ export default function RemindersManager() {
                   name="title"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>{t('title')}</FormLabel>
+                      <FormLabel>{t('reminder_title')}</FormLabel>
                       <FormControl>
                         <Input placeholder={t('time_to_log')} {...field} />
                       </FormControl>
@@ -191,7 +191,7 @@ export default function RemindersManager() {
                   name="message"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>{t('message')}</FormLabel>
+                      <FormLabel>{t('reminder_message')}</FormLabel>
                       <FormControl>
                         <Textarea 
                           placeholder={t('reminder_message_placeholder')} 
@@ -210,7 +210,7 @@ export default function RemindersManager() {
                     name="frequency"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>{t('frequency')}</FormLabel>
+                        <FormLabel>{t('reminder_frequency')}</FormLabel>
                         <Select
                           onValueChange={field.onChange}
                           defaultValue={field.value}
@@ -222,8 +222,8 @@ export default function RemindersManager() {
                           </FormControl>
                           <SelectContent>
                             <SelectItem value="daily">{t('daily')}</SelectItem>
-                            <SelectItem value="weekly">{t('weekly')}</SelectItem>
-                            <SelectItem value="custom">{t('custom')}</SelectItem>
+                            <SelectItem value="weekly">{t('weekly_reminder')}</SelectItem>
+                            <SelectItem value="custom">{t('custom_reminder')}</SelectItem>
                           </SelectContent>
                         </Select>
                         <FormMessage />
