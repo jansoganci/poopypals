@@ -129,6 +129,18 @@ const resources = {
       "long_duration_tip": "You're spending more time than average on the toilet. Try to limit toilet time to prevent hemorrhoids.",
       "decreasing_frequency_title": "Decreased Frequency",
       "decreasing_frequency_tip": "Your frequency has decreased compared to last week. Stay hydrated and maintain a fiber-rich diet to promote regularity.",
+      "avg_per_day": "Average Per Day",
+      "most_active_day": "Most Active Day",
+      "total_this_week": "Total This Week",
+      "most_common": "Most Common",
+      "satisfaction_rate": "Satisfaction Rate",
+      "normal_rate": "Normal Rate",
+      "avg_score": "Average Score",
+      "pattern_insight": "Pattern Insight",
+      "pattern_insight_description": "Your duration and consistency show interesting patterns. Analyze the chart to better understand your digestive health.",
+      "pattern_insight_need_more_data": "Log more entries to see pattern insights and correlations in your digestive health.",
+      "duration_consistency_correlation": "Duration-Consistency Correlation",
+      "improving_frequency": "Improving Frequency",
       
       // Personality quiz
       "personality_quiz": "Poop Personality Quiz",

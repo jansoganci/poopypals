@@ -357,129 +357,314 @@ export default function Stats() {
         </TabsList>
         
         <TabsContent value="frequency">
-          <Card>
-            <CardHeader>
-              <CardTitle>{t('weekly_overview')}</CardTitle>
+          <Card className="overflow-hidden border-2 border-amber-100 dark:border-amber-900/30">
+            <CardHeader className="bg-gradient-to-r from-amber-50 to-amber-100/50 dark:from-amber-900/20 dark:to-amber-800/10">
+              <div className="flex items-center">
+                <BarChart3 className="h-5 w-5 text-amber-500 mr-2" />
+                <CardTitle>{t('weekly_overview')}</CardTitle>
+              </div>
               <CardDescription>{t('frequency_chart_description')}</CardDescription>
             </CardHeader>
-            <CardContent>
+            <CardContent className="p-6">
               <div className="h-80">
-                <AreaChart 
-                  data={last7Days}
-                  index="name"
-                  categories={["count"]}
-                  valueFormatter={(value) => `${value} ${t('logs').toLowerCase()}`}
-                  showAnimation
-                />
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.5 }}
+                  className="h-full"
+                >
+                  <AreaChart 
+                    data={last7Days}
+                    index="name"
+                    categories={["count"]}
+                    valueFormatter={(value) => `${value} ${t('logs').toLowerCase()}`}
+                    showAnimation
+                  />
+                </motion.div>
               </div>
+              
+              {/* Summary stats below chart */}
+              <motion.div 
+                className="grid grid-cols-3 gap-4 mt-6"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 0.3, duration: 0.5 }}
+              >
+                <div className="bg-amber-50 dark:bg-amber-900/20 rounded-lg p-3 text-center">
+                  <p className="text-xs text-amber-700 dark:text-amber-300">{t('avg_per_day')}</p>
+                  <p className="text-2xl font-bold text-amber-600 dark:text-amber-200">
+                    {logs.length ? (logs.length / 7).toFixed(1) : '0'}
+                  </p>
+                </div>
+                <div className="bg-amber-50 dark:bg-amber-900/20 rounded-lg p-3 text-center">
+                  <p className="text-xs text-amber-700 dark:text-amber-300">{t('most_active_day')}</p>
+                  <p className="text-2xl font-bold text-amber-600 dark:text-amber-200">
+                    {last7Days.sort((a, b) => b.count - a.count)[0]?.name || '—'}
+                  </p>
+                </div>
+                <div className="bg-amber-50 dark:bg-amber-900/20 rounded-lg p-3 text-center">
+                  <p className="text-xs text-amber-700 dark:text-amber-300">{t('total_this_week')}</p>
+                  <p className="text-2xl font-bold text-amber-600 dark:text-amber-200">
+                    {last7Days.reduce((sum, day) => sum + day.count, 0)}
+                  </p>
+                </div>
+              </motion.div>
             </CardContent>
-            <CardFooter className="flex justify-between text-xs text-muted-foreground">
-              <div>{t('last_7_days')}</div>
-              <Badge variant="outline">{logs.length} {t('total_logs')}</Badge>
+            <CardFooter className="flex justify-between text-xs text-muted-foreground bg-amber-50/50 dark:bg-amber-900/10 py-3">
+              <div className="flex items-center">
+                <Calendar className="h-3 w-3 mr-1 text-amber-500" />
+                {t('last_7_days')}
+              </div>
+              <Badge variant="outline" className="bg-amber-100/50 dark:bg-amber-800/30 border-amber-200 dark:border-amber-700">
+                {logs.length} {t('total_logs')}
+              </Badge>
             </CardFooter>
           </Card>
         </TabsContent>
         
         <TabsContent value="distribution">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <Card>
-              <CardHeader>
-                <CardTitle>{t('time_of_day')}</CardTitle>
+            <Card className="overflow-hidden border-2 border-purple-100 dark:border-purple-900/30">
+              <CardHeader className="bg-gradient-to-r from-purple-50 to-purple-100/50 dark:from-purple-900/20 dark:to-purple-800/10">
+                <div className="flex items-center">
+                  <Clock className="h-5 w-5 text-purple-500 mr-2" />
+                  <CardTitle>{t('time_of_day')}</CardTitle>
+                </div>
               </CardHeader>
-              <CardContent>
+              <CardContent className="p-6">
                 <div className="h-64">
-                  <PieChart 
-                    data={timeOfDayData}
-                    category="value"
-                    index="name"
-                    valueFormatter={(value) => `${value} ${t('logs').toLowerCase()}`}
-                    showAnimation
-                  />
+                  <motion.div
+                    initial={{ opacity: 0, scale: 0.9 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    transition={{ duration: 0.5 }}
+                    className="h-full"
+                  >
+                    <PieChart 
+                      data={timeOfDayData}
+                      category="value"
+                      index="name"
+                      valueFormatter={(value) => `${value} ${t('logs').toLowerCase()}`}
+                      showAnimation
+                    />
+                  </motion.div>
                 </div>
               </CardContent>
+              <CardFooter className="bg-purple-50/50 dark:bg-purple-900/10 text-xs text-center text-purple-700 dark:text-purple-300">
+                <div className="w-full">
+                  {timeOfDayData.reduce((max, item) => item.value > max.value ? item : max, {name: '', value: 0}).name !== '' && 
+                    <>Most active time: <Badge variant="outline" className="ml-1 bg-purple-100 dark:bg-purple-800 border-purple-200">
+                      {timeOfDayData.reduce((max, item) => item.value > max.value ? item : max, {name: '', value: 0}).name}
+                    </Badge></>
+                  }
+                </div>
+              </CardFooter>
             </Card>
             
-            <Card>
-              <CardHeader>
-                <CardTitle>{t('day_of_week')}</CardTitle>
+            <Card className="overflow-hidden border-2 border-emerald-100 dark:border-emerald-900/30">
+              <CardHeader className="bg-gradient-to-r from-emerald-50 to-emerald-100/50 dark:from-emerald-900/20 dark:to-emerald-800/10">
+                <div className="flex items-center">
+                  <Calendar className="h-5 w-5 text-emerald-500 mr-2" />
+                  <CardTitle>{t('day_of_week')}</CardTitle>
+                </div>
               </CardHeader>
-              <CardContent>
+              <CardContent className="p-6">
                 <div className="h-64">
-                  <BarChart 
-                    data={dayOfWeekData}
-                    index="name"
-                    categories={["value"]}
-                    valueFormatter={(value) => `${value} ${t('logs').toLowerCase()}`}
-                    showAnimation
-                  />
+                  <motion.div
+                    initial={{ opacity: 0, scale: 0.9 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    transition={{ duration: 0.5 }}
+                    className="h-full"
+                  >
+                    <BarChart 
+                      data={dayOfWeekData}
+                      index="name"
+                      categories={["value"]}
+                      valueFormatter={(value) => `${value} ${t('logs').toLowerCase()}`}
+                      showAnimation
+                    />
+                  </motion.div>
                 </div>
               </CardContent>
+              <CardFooter className="bg-emerald-50/50 dark:bg-emerald-900/10 text-xs text-center text-emerald-700 dark:text-emerald-300">
+                <div className="w-full">
+                  {dayOfWeekData.reduce((max, item) => item.value > max.value ? item : max, {name: '', value: 0}).name !== '' &&
+                    <>Most active day: <Badge variant="outline" className="ml-1 bg-emerald-100 dark:bg-emerald-800 border-emerald-200">
+                      {dayOfWeekData.reduce((max, item) => item.value > max.value ? item : max, {name: '', value: 0}).name}
+                    </Badge></>
+                  }
+                </div>
+              </CardFooter>
             </Card>
           </div>
         </TabsContent>
         
         <TabsContent value="ratings">
-          <Card>
-            <CardHeader>
-              <CardTitle>{t('rating_distribution')}</CardTitle>
+          <Card className="overflow-hidden border-2 border-blue-100 dark:border-blue-900/30">
+            <CardHeader className="bg-gradient-to-r from-blue-50 to-blue-100/50 dark:from-blue-900/20 dark:to-blue-800/10">
+              <div className="flex items-center">
+                <ThumbsUp className="h-5 w-5 text-blue-500 mr-2" />
+                <CardTitle>{t('rating_distribution')}</CardTitle>
+              </div>
               <CardDescription>{t('rating_chart_description')}</CardDescription>
             </CardHeader>
-            <CardContent>
+            <CardContent className="p-6">
               <div className="h-80">
-                <PieChart 
-                  data={ratingData}
-                  category="value"
-                  index="name"
-                  valueFormatter={(value) => `${value} ${t('logs').toLowerCase()}`}
-                  showAnimation
-                />
+                <motion.div
+                  initial={{ opacity: 0, scale: 0.9 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  transition={{ duration: 0.5 }}
+                  className="h-full"
+                >
+                  <PieChart 
+                    data={ratingData}
+                    category="value"
+                    index="name"
+                    valueFormatter={(value) => `${value} ${t('logs').toLowerCase()}`}
+                    showAnimation
+                  />
+                </motion.div>
               </div>
             </CardContent>
+            <CardFooter className="bg-blue-50/50 dark:bg-blue-900/10 py-3">
+              <div className="w-full grid grid-cols-2 gap-2">
+                <div className="text-center">
+                  <p className="text-xs text-blue-700 dark:text-blue-300">{t('most_common')}</p>
+                  {ratingData.length > 0 && (
+                    <Badge variant="outline" className="bg-blue-100 dark:bg-blue-800 border-blue-200">
+                      {ratingData.reduce((max, item) => item.value > max.value ? item : max, {name: '', value: 0}).name}
+                    </Badge>
+                  )}
+                </div>
+                <div className="text-center">
+                  <p className="text-xs text-blue-700 dark:text-blue-300">{t('satisfaction_rate')}</p>
+                  <Badge variant="outline" className="bg-blue-100 dark:bg-blue-800 border-blue-200">
+                    {logs.length ? Math.round((logs.filter(log => log.rating === 'good' || log.rating === 'excellent').length / logs.length) * 100) : 0}%
+                  </Badge>
+                </div>
+              </div>
+            </CardFooter>
           </Card>
         </TabsContent>
         
         <TabsContent value="consistency">
-          <Card>
-            <CardHeader>
-              <CardTitle>{t('consistency_chart')}</CardTitle>
+          <Card className="overflow-hidden border-2 border-pink-100 dark:border-pink-900/30">
+            <CardHeader className="bg-gradient-to-r from-pink-50 to-pink-100/50 dark:from-pink-900/20 dark:to-pink-800/10">
+              <div className="flex items-center">
+                <ActivitySquare className="h-5 w-5 text-pink-500 mr-2" />
+                <CardTitle>{t('consistency_chart')}</CardTitle>
+              </div>
               <CardDescription>{t('consistency_chart_description')}</CardDescription>
             </CardHeader>
-            <CardContent>
+            <CardContent className="p-6">
               <div className="h-80">
-                <BarChart 
-                  data={consistencyData}
-                  index="name"
-                  categories={["value"]}
-                  valueFormatter={(value) => `${value} ${t('logs').toLowerCase()}`}
-                  showAnimation
-                />
+                <motion.div
+                  initial={{ opacity: 0, scale: 0.9 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  transition={{ duration: 0.5 }}
+                  className="h-full"
+                >
+                  <BarChart 
+                    data={consistencyData}
+                    index="name"
+                    categories={["value"]}
+                    valueFormatter={(value) => `${value} ${t('logs').toLowerCase()}`}
+                    showAnimation
+                  />
+                </motion.div>
               </div>
             </CardContent>
+            <CardFooter className="bg-pink-50/50 dark:bg-pink-900/10 py-3">
+              <div className="w-full grid grid-cols-3 gap-1">
+                <div className="text-center">
+                  <p className="text-xs text-pink-700 dark:text-pink-300 mb-1">{t('normal_rate')}</p>
+                  <Badge variant="outline" className="bg-pink-100 dark:bg-pink-800 border-pink-200">
+                    {logs.length ? Math.round((logs.filter(log => log.consistency === 3).length / logs.length) * 100) : 0}%
+                  </Badge>
+                </div>
+                <div className="text-center">
+                  <p className="text-xs text-pink-700 dark:text-pink-300 mb-1">{t('most_common')}</p>
+                  {consistencyData.length > 0 && (
+                    <Badge variant="outline" className="bg-pink-100 dark:bg-pink-800 border-pink-200">
+                      {consistencyData.reduce((max, item) => item.value > max.value ? item : max, {name: '', value: 0}).name}
+                    </Badge>
+                  )}
+                </div>
+                <div className="text-center">
+                  <p className="text-xs text-pink-700 dark:text-pink-300 mb-1">{t('avg_score')}</p>
+                  <Badge variant="outline" className="bg-pink-100 dark:bg-pink-800 border-pink-200">
+                    {calculateAverage('consistency')}
+                  </Badge>
+                </div>
+              </div>
+            </CardFooter>
           </Card>
         </TabsContent>
       </Tabs>
       
       {/* Trends Over Time */}
-      <Card>
-        <CardHeader>
+      <Card className="overflow-hidden border-2 border-orange-100 dark:border-orange-900/30 mb-20">
+        <CardHeader className="bg-gradient-to-r from-orange-50 to-orange-100/50 dark:from-orange-900/20 dark:to-orange-800/10">
           <div className="flex items-center">
-            <TrendingUp className="h-5 w-5 text-primary mr-2" />
+            <TrendingUp className="h-5 w-5 text-orange-500 mr-2" />
             <CardTitle>{t('trends_over_time')}</CardTitle>
           </div>
           <CardDescription>{t('trends_description')}</CardDescription>
         </CardHeader>
-        <CardContent>
+        <CardContent className="p-6">
           <div className="h-80">
-            <LineChart 
-              data={last7Days}
-              index="name"
-              categories={["duration", "consistency"]}
-              valueFormatter={(value) => `${value}`}
-              showAnimation
-            />
+            <motion.div
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.7 }}
+              className="h-full"
+            >
+              <LineChart 
+                data={last7Days}
+                index="name"
+                categories={["duration", "consistency"]}
+                valueFormatter={(value) => `${value}`}
+                showAnimation
+              />
+            </motion.div>
           </div>
+          
+          {/* Pattern insights */}
+          <motion.div 
+            className="mt-6 p-4 rounded-lg bg-orange-50 dark:bg-orange-900/20 border border-orange-200 dark:border-orange-800"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.4, duration: 0.5 }}
+          >
+            <div className="flex items-start space-x-3">
+              <div className="bg-orange-100 dark:bg-orange-800 rounded-md p-2 text-orange-800 dark:text-orange-200">
+                <Sparkles className="w-5 h-5" />
+              </div>
+              <div>
+                <h3 className="font-semibold text-orange-800 dark:text-orange-200">{t('pattern_insight')}</h3>
+                <p className="text-sm text-orange-700 dark:text-orange-300">
+                  {logs.length > 3 
+                    ? t('pattern_insight_description') 
+                    : t('pattern_insight_need_more_data')}
+                </p>
+                
+                {/* Correlation badges */}
+                {logs.length > 3 && (
+                  <div className="flex flex-wrap gap-2 mt-2">
+                    <Badge variant="outline" className="bg-orange-100 dark:bg-orange-800 border-orange-200">
+                      {t('duration_consistency_correlation')}
+                    </Badge>
+                    {calculateTrend('count') > 10 && (
+                      <Badge variant="outline" className="bg-orange-100 dark:bg-orange-800 border-orange-200">
+                        {t('improving_frequency')}
+                      </Badge>
+                    )}
+                  </div>
+                )}
+              </div>
+            </div>
+          </motion.div>
         </CardContent>
-        <CardFooter className="text-xs text-muted-foreground">
+        <CardFooter className="bg-orange-50/50 dark:bg-orange-900/10 py-3 text-xs text-muted-foreground">
           {t('trends_footer')}
         </CardFooter>
       </Card>
