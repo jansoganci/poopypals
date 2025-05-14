@@ -3,6 +3,7 @@ import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { Moon, Sun } from "lucide-react";
 import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 
 interface ThemeToggleProps {
   showLabel?: boolean;
@@ -11,6 +12,7 @@ interface ThemeToggleProps {
 
 export default function ThemeToggle({ showLabel = true, className = "" }: ThemeToggleProps) {
   const { theme, setTheme } = useTheme();
+  const { t } = useTranslation();
   const [mounted, setMounted] = useState(false);
   
   useEffect(() => {
@@ -34,7 +36,7 @@ export default function ThemeToggle({ showLabel = true, className = "" }: ThemeT
             <Sun className="h-5 w-5 text-muted-foreground" />
           )}
           <Label htmlFor="theme-toggle">
-            {theme === "dark" ? "Dark Mode" : "Light Mode"}
+            {theme === "dark" ? t('dark_mode') : t('light_mode')}
           </Label>
         </div>
       )}
