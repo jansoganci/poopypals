@@ -439,14 +439,18 @@ export class DatabaseStorage implements IStorage {
   }
 
   async getUserNotifications(userId: number, limit?: number): Promise<Notification[]> {
-    const query = db
+    // Execute the full query
+    let results = await db
       .select()
       .from(notifications)
       .where(eq(notifications.userId, userId))
       .orderBy(desc(notifications.createdAt));
-
-    // If limit is specified, use it
-    const results = limit ? await query.limit(limit) : await query;
+    
+    // Apply limit in JavaScript if needed
+    if (limit && limit > 0 && results.length > limit) {
+      results = results.slice(0, limit);
+    }
+    
     return results;
   }
 

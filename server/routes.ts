@@ -244,6 +244,200 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.status(500).json({ message: 'Failed to update user avatar' });
     }
   });
+  
+  // Notification API Routes
+  // Get all notifications for a user
+  app.get("/api/notifications", async (req, res) => {
+    try {
+      const userId = 1; // Always use demo user for now
+      const limit = req.query.limit ? parseInt(req.query.limit as string) : undefined;
+      
+      const notifications = await storage.getUserNotifications(userId, limit);
+      res.json(notifications);
+    } catch (error) {
+      console.error("Error fetching notifications:", error);
+      res.status(500).json({ error: "Failed to fetch notifications" });
+    }
+  });
+  
+  // Create a new notification
+  app.post("/api/notifications", async (req, res) => {
+    try {
+      const userId = 1; // Always use demo user for now
+      
+      // Validate the request body
+      const parseResult = insertNotificationSchema.safeParse({
+        ...req.body,
+        userId
+      });
+      
+      if (!parseResult.success) {
+        const errorMessage = fromZodError(parseResult.error).message;
+        return res.status(400).json({ error: errorMessage });
+      }
+      
+      const notification = await storage.createNotification(parseResult.data);
+      res.status(201).json(notification);
+    } catch (error) {
+      console.error("Error creating notification:", error);
+      res.status(500).json({ error: "Failed to create notification" });
+    }
+  });
+  
+  // Mark a notification as read
+  app.patch("/api/notifications/:id/read", async (req, res) => {
+    try {
+      const notificationId = parseInt(req.params.id);
+      const notification = await storage.markNotificationAsRead(notificationId);
+      res.json(notification);
+    } catch (error) {
+      console.error("Error marking notification as read:", error);
+      res.status(500).json({ error: "Failed to mark notification as read" });
+    }
+  });
+  
+  // Mark all notifications as read for a user
+  app.patch("/api/notifications/read-all", async (req, res) => {
+    try {
+      const userId = 1; // Always use demo user for now
+      await storage.markAllUserNotificationsAsRead(userId);
+      res.json({ success: true });
+    } catch (error) {
+      console.error("Error marking all notifications as read:", error);
+      res.status(500).json({ error: "Failed to mark all notifications as read" });
+    }
+  });
+  
+  // Delete a notification
+  app.delete("/api/notifications/:id", async (req, res) => {
+    try {
+      const notificationId = parseInt(req.params.id);
+      await storage.deleteNotification(notificationId);
+      res.json({ success: true });
+    } catch (error) {
+      console.error("Error deleting notification:", error);
+      res.status(500).json({ error: "Failed to delete notification" });
+    }
+  });
+  
+  // Notification Preferences API Routes
+  // Get notification preferences for a user
+  app.get("/api/notification-preferences", async (req, res) => {
+    try {
+      const userId = 1; // Always use demo user for now
+      const preferences = await storage.getUserNotificationPreferences(userId);
+      res.json(preferences || { userId });
+    } catch (error) {
+      console.error("Error fetching notification preferences:", error);
+      res.status(500).json({ error: "Failed to fetch notification preferences" });
+    }
+  });
+  
+  // Create or update notification preferences
+  app.post("/api/notification-preferences", async (req, res) => {
+    try {
+      const userId = 1; // Always use demo user for now
+      
+      // Validate the request body
+      const parseResult = insertNotificationPreferencesSchema.safeParse({
+        ...req.body,
+        userId
+      });
+      
+      if (!parseResult.success) {
+        const errorMessage = fromZodError(parseResult.error).message;
+        return res.status(400).json({ error: errorMessage });
+      }
+      
+      const preferences = await storage.createOrUpdateNotificationPreferences(userId, parseResult.data);
+      res.json(preferences);
+    } catch (error) {
+      console.error("Error updating notification preferences:", error);
+      res.status(500).json({ error: "Failed to update notification preferences" });
+    }
+  });
+  
+  // Reminder API Routes
+  // Get all reminders for a user
+  app.get("/api/reminders", async (req, res) => {
+    try {
+      const userId = 1; // Always use demo user for now
+      const reminders = await storage.getUserReminders(userId);
+      res.json(reminders);
+    } catch (error) {
+      console.error("Error fetching reminders:", error);
+      res.status(500).json({ error: "Failed to fetch reminders" });
+    }
+  });
+  
+  // Create a new reminder
+  app.post("/api/reminders", async (req, res) => {
+    try {
+      const userId = 1; // Always use demo user for now
+      
+      // Validate the request body
+      const parseResult = insertReminderSchema.safeParse({
+        ...req.body,
+        userId
+      });
+      
+      if (!parseResult.success) {
+        const errorMessage = fromZodError(parseResult.error).message;
+        return res.status(400).json({ error: errorMessage });
+      }
+      
+      const reminder = await storage.createReminder(parseResult.data);
+      res.status(201).json(reminder);
+    } catch (error) {
+      console.error("Error creating reminder:", error);
+      res.status(500).json({ error: "Failed to create reminder" });
+    }
+  });
+  
+  // Update a reminder
+  app.patch("/api/reminders/:id", async (req, res) => {
+    try {
+      const reminderId = parseInt(req.params.id);
+      
+      // Ensure reminder exists
+      const existingReminder = await storage.getReminderById(reminderId);
+      if (!existingReminder) {
+        return res.status(404).json({ error: "Reminder not found" });
+      }
+      
+      const updatedReminder = await storage.updateReminder(reminderId, req.body);
+      res.json(updatedReminder);
+    } catch (error) {
+      console.error("Error updating reminder:", error);
+      res.status(500).json({ error: "Failed to update reminder" });
+    }
+  });
+  
+  // Toggle a reminder active/inactive
+  app.patch("/api/reminders/:id/toggle", async (req, res) => {
+    try {
+      const reminderId = parseInt(req.params.id);
+      const isActive = req.body.isActive === true;
+      
+      const reminder = await storage.toggleReminderActive(reminderId, isActive);
+      res.json(reminder);
+    } catch (error) {
+      console.error("Error toggling reminder:", error);
+      res.status(500).json({ error: "Failed to toggle reminder" });
+    }
+  });
+  
+  // Delete a reminder
+  app.delete("/api/reminders/:id", async (req, res) => {
+    try {
+      const reminderId = parseInt(req.params.id);
+      await storage.deleteReminder(reminderId);
+      res.json({ success: true });
+    } catch (error) {
+      console.error("Error deleting reminder:", error);
+      res.status(500).json({ error: "Failed to delete reminder" });
+    }
+  });
 
   const httpServer = createServer(app);
   return httpServer;
