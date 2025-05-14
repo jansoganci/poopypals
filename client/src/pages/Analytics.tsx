@@ -7,6 +7,7 @@ import { usePoopContext } from "@/context/PoopContext";
 import { motion } from "framer-motion";
 import { useTranslation } from "react-i18next";
 import { format, subDays, differenceInDays, isWithinInterval, startOfDay, endOfDay, formatDistanceToNow, parseISO } from "date-fns";
+import { useTheme } from "next-themes";
 import {
   Calendar, 
   Clock, 
@@ -695,6 +696,90 @@ const DurationAnalysis = ({ logs }: { logs: any[] }) => {
   );
 };
 
+// Trends Over Time Component
+const TrendsOverTime = ({ logs }: { logs: any[] }) => {
+  const { t } = useTranslation();
+  const { resolvedTheme: theme } = useTheme();
+  
+  const getTimelineData = () => {
+    if (logs.length < 5) return [];
+    
+    // Process the logs by date, getting the last 10 entries
+    const sortedLogs = [...logs].sort((a, b) => 
+      new Date(a.dateTime).getTime() - new Date(b.dateTime).getTime()
+    ).slice(-10);
+    
+    return sortedLogs.map(log => ({
+      date: format(new Date(log.dateTime), 'MMM d'),
+      consistency: log.consistency,
+      rating: log.rating,
+      duration: log.duration
+    }));
+  };
+  
+  return (
+    <Card>
+      <CardHeader>
+        <div className="flex items-center">
+          <LineChart className="w-5 h-5 text-indigo-500 mr-2" />
+          <CardTitle>{t('advanced_trends_over_time')}</CardTitle>
+        </div>
+        <CardDescription>{t('advanced_trends_description')}</CardDescription>
+      </CardHeader>
+      <CardContent>
+        <div className="h-64">
+          <ResponsiveContainer width="100%" height="100%">
+            <ComposedChart data={getTimelineData()}>
+              <CartesianGrid strokeDasharray="3 3" />
+              <XAxis dataKey="date" />
+              <YAxis yAxisId="left" domain={[1, 7]} />
+              <YAxis yAxisId="right" orientation="right" domain={[1, 10]} />
+              <Tooltip 
+                contentStyle={{
+                  backgroundColor: 'var(--background)',
+                  borderColor: 'var(--border)',
+                  borderRadius: '8px',
+                }}
+              />
+              <Legend />
+              <Line
+                yAxisId="left"
+                type="monotone"
+                dataKey="consistency"
+                name={t('consistency')}
+                stroke={theme === 'dark' ? '#818cf8' : '#6366f1'}
+                strokeWidth={2}
+                dot={false}
+                activeDot={{ r: 6 }}
+              />
+              <Line
+                yAxisId="left"
+                type="monotone"
+                dataKey="rating"
+                name={t('rating')}
+                stroke={theme === 'dark' ? '#34d399' : '#10b981'}
+                strokeWidth={2}
+                dot={false}
+                activeDot={{ r: 6 }}
+              />
+              <Bar
+                yAxisId="right"
+                dataKey="duration"
+                name={t('duration')}
+                fill={theme === 'dark' ? '#f97316' : '#fb923c'}
+                radius={[4, 4, 0, 0]}
+              />
+            </ComposedChart>
+          </ResponsiveContainer>
+        </div>
+      </CardContent>
+      <CardFooter className="text-xs text-muted-foreground">
+        {t('advanced_trends_footer')}
+      </CardFooter>
+    </Card>
+  );
+};
+
 // Health Correlations Component
 const HealthCorrelations = ({ logs }: { logs: any[] }) => {
   const { t } = useTranslation();
@@ -1250,6 +1335,9 @@ export default function Analytics() {
           
           {/* Consistency Patterns */}
           <ConsistencyPatterns logs={filteredLogs} />
+          
+          {/* Trends Over Time */}
+          <TrendsOverTime logs={filteredLogs} />
           
           {/* Duration Analysis */}
           <DurationAnalysis logs={filteredLogs} />
