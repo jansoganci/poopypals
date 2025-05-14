@@ -135,6 +135,113 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Avatar Component Routes
+  app.get('/api/avatar/components', async (req, res) => {
+    try {
+      const components = await storage.getAvatarComponents();
+      res.json(components);
+    } catch (error) {
+      res.status(500).json({ message: 'Failed to get avatar components' });
+    }
+  });
+
+  app.get('/api/avatar/components/:type', async (req, res) => {
+    try {
+      const { type } = req.params;
+      const components = await storage.getAvatarComponentsByType(type);
+      res.json(components);
+    } catch (error) {
+      res.status(500).json({ message: 'Failed to get avatar components by type' });
+    }
+  });
+
+  app.post('/api/avatar/components', async (req, res) => {
+    try {
+      const parseResult = insertAvatarComponentSchema.safeParse(req.body);
+      if (!parseResult.success) {
+        const errorMessage = fromZodError(parseResult.error).message;
+        return res.status(400).json({ message: errorMessage });
+      }
+      
+      const component = await storage.createAvatarComponent(parseResult.data);
+      res.status(201).json(component);
+    } catch (error) {
+      res.status(500).json({ message: 'Failed to create avatar component' });
+    }
+  });
+
+  app.get('/api/users/:userId/avatar/components', async (req, res) => {
+    try {
+      const userId = parseInt(req.params.userId);
+      if (isNaN(userId)) {
+        return res.status(400).json({ message: 'Invalid user ID' });
+      }
+      
+      const components = await storage.getUserAvatarComponents(userId);
+      res.json(components);
+    } catch (error) {
+      res.status(500).json({ message: 'Failed to get user avatar components' });
+    }
+  });
+
+  app.post('/api/users/:userId/avatar/components/:componentId', async (req, res) => {
+    try {
+      const userId = parseInt(req.params.userId);
+      const componentId = parseInt(req.params.componentId);
+      
+      if (isNaN(userId) || isNaN(componentId)) {
+        return res.status(400).json({ message: 'Invalid user ID or component ID' });
+      }
+      
+      const userComponent = await storage.unlockAvatarComponentForUser(userId, componentId);
+      res.status(201).json(userComponent);
+    } catch (error) {
+      res.status(500).json({ message: 'Failed to unlock avatar component for user' });
+    }
+  });
+
+  app.get('/api/users/:userId/avatar', async (req, res) => {
+    try {
+      const userId = parseInt(req.params.userId);
+      if (isNaN(userId)) {
+        return res.status(400).json({ message: 'Invalid user ID' });
+      }
+      
+      const avatar = await storage.getUserAvatar(userId);
+      if (!avatar) {
+        return res.status(404).json({ message: 'Avatar not found' });
+      }
+      
+      res.json(avatar);
+    } catch (error) {
+      res.status(500).json({ message: 'Failed to get user avatar' });
+    }
+  });
+
+  app.post('/api/users/:userId/avatar', async (req, res) => {
+    try {
+      const userId = parseInt(req.params.userId);
+      if (isNaN(userId)) {
+        return res.status(400).json({ message: 'Invalid user ID' });
+      }
+      
+      const parseResult = insertUserAvatarSchema.safeParse({
+        ...req.body,
+        userId
+      });
+      
+      if (!parseResult.success) {
+        const errorMessage = fromZodError(parseResult.error).message;
+        return res.status(400).json({ message: errorMessage });
+      }
+      
+      const avatar = await storage.updateUserAvatar(userId, parseResult.data);
+      res.json(avatar);
+    } catch (error) {
+      res.status(500).json({ message: 'Failed to update user avatar' });
+    }
+  });
+
   const httpServer = createServer(app);
   return httpServer;
 }
