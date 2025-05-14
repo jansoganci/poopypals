@@ -113,6 +113,7 @@ export function PoopProvider({ children }: { children: ReactNode }) {
       logs,
       achievements,
       stats,
+      setStats,
       addLog,
       addAchievement
     }}>

@@ -104,7 +104,7 @@ const resources = {
       "challenge_completed": "Challenge Completed!",
       "error": "Error",
       "daily": "Daily",
-      "streak": "Streak",
+      "streak_challenge": "Streak",
       "achievement": "Achievement",
       "collect_achievements": "Collect them all to earn Flush Funds",
       "discover_personality": "Discover Your Poop Personality!",

@@ -49,21 +49,8 @@ export function useChallengeToast() {
   
   const showChallengeCompletedToast = (challenge: UserChallengeData) => {
     toast({
-      title: (
-        <div className="flex items-center space-x-2">
-          <CheckCircle2 className="h-5 w-5 text-green-500" />
-          <span>{t('challenge_completed')}</span>
-        </div>
-      ),
-      description: (
-        <div>
-          <p className="font-medium text-sm">{challenge.challenge.title}</p>
-          <div className="flex items-center mt-1 text-amber-600">
-            <Award className="h-4 w-4 mr-1" />
-            <span>+{challenge.challenge.rewardAmount} {t('flush_funds')}</span>
-          </div>
-        </div>
-      ),
+      title: t('challenge_completed'),
+      description: `${challenge.challenge.title} (+${challenge.challenge.rewardAmount} ${t('flush_funds')})`,
       variant: "default",
       duration: 5000,
     });
