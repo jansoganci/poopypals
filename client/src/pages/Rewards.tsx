@@ -7,9 +7,11 @@ import { Trophy, Brain } from "lucide-react";
 import { usePoopContext } from "@/context/PoopContext";
 import AchievementSystem, { achievements } from "@/components/AchievementSystem";
 import PersonalityQuiz from "@/components/PersonalityQuiz";
+import { useTranslation } from "react-i18next";
 
 export default function Rewards() {
   const { stats } = usePoopContext();
+  const { t } = useTranslation();
   const [isQuizOpen, setIsQuizOpen] = useState(false);
   const [personality, setPersonality] = useState<any>(null);
 
@@ -24,17 +26,17 @@ export default function Rewards() {
   return (
     <div className="p-4 pb-20">
       <div className="flex justify-between items-center mb-4">
-        <h1 className="text-2xl font-bold text-secondary">Rewards</h1>
+        <h1 className="text-2xl font-bold text-secondary">{t('rewards')}</h1>
         <div className="flex items-center gap-2">
           <span className="text-xl">💰</span>
-          <span className="text-lg font-bold text-secondary">{stats.flushFunds} Flush Funds</span>
+          <span className="text-lg font-bold text-secondary">{stats.flushFunds} {t('flush_funds')}</span>
         </div>
       </div>
 
       <Tabs defaultValue="achievements" className="mb-4">
         <TabsList className="grid grid-cols-2 mb-4 w-full">
-          <TabsTrigger value="achievements">Achievements</TabsTrigger>
-          <TabsTrigger value="shop">Reward Shop</TabsTrigger>
+          <TabsTrigger value="achievements">{t('achievements')}</TabsTrigger>
+          <TabsTrigger value="shop">{t('reward_shop')}</TabsTrigger>
         </TabsList>
         
         <TabsContent value="achievements">
@@ -46,14 +48,14 @@ export default function Rewards() {
                     <Brain className="h-10 w-10 text-amber-500" />
                   </div>
                   <div className="flex-1">
-                    <h3 className="font-bold text-lg">Discover Your Poop Personality!</h3>
-                    <p className="text-sm text-gray-600">Take our quiz to unlock special achievements and learn health tips</p>
+                    <h3 className="font-bold text-lg">{t('discover_personality')}</h3>
+                    <p className="text-sm text-gray-600">{t('take_quiz_description')}</p>
                   </div>
                   <Button 
                     className="bg-amber-500 hover:bg-amber-600 text-white"
                     onClick={() => setIsQuizOpen(true)}
                   >
-                    Take Quiz
+                    {t('take_quiz')}
                   </Button>
                 </div>
                 
@@ -63,7 +65,7 @@ export default function Rewards() {
                       <span className="text-xl">{personality.emoji}</span>
                       <span className="font-medium">{personality.title}</span>
                     </div>
-                    <p className="text-xs text-gray-500 mt-1">Click to retake the quiz and explore other personalities</p>
+                    <p className="text-xs text-gray-500 mt-1">{t('retake_quiz_hint')}</p>
                   </div>
                 )}
               </CardContent>
@@ -74,8 +76,8 @@ export default function Rewards() {
             <CardHeader>
               <div className="flex justify-between items-center">
                 <div>
-                  <CardTitle>Achievement Gallery</CardTitle>
-                  <CardDescription>Collect them all to earn Flush Funds</CardDescription>
+                  <CardTitle>{t('achievement_gallery')}</CardTitle>
+                  <CardDescription>{t('collect_achievements')}</CardDescription>
                 </div>
                 <Trophy className="h-5 w-5 text-amber-500" />
               </div>
@@ -89,8 +91,8 @@ export default function Rewards() {
         <TabsContent value="shop">
           <Card>
             <CardHeader>
-              <CardTitle>Reward Shop</CardTitle>
-              <CardDescription>Spend your Flush Funds</CardDescription>
+              <CardTitle>{t('reward_shop')}</CardTitle>
+              <CardDescription>{t('spend_funds')}</CardDescription>
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
@@ -98,8 +100,8 @@ export default function Rewards() {
                   <div className="flex items-center gap-3">
                     <span className="text-2xl">🧻</span>
                     <div>
-                      <h3 className="font-medium">Premium Themes</h3>
-                      <p className="text-xs text-gray-500">Customize your app</p>
+                      <h3 className="font-medium">{t('premium_themes')}</h3>
+                      <p className="text-xs text-gray-500">{t('customize_app')}</p>
                     </div>
                   </div>
                   <Button className="px-3 py-1 bg-primary text-secondary rounded-lg text-sm font-medium">
@@ -111,8 +113,8 @@ export default function Rewards() {
                   <div className="flex items-center gap-3">
                     <span className="text-2xl">🎮</span>
                     <div>
-                      <h3 className="font-medium">Toilet Tapper Game</h3>
-                      <p className="text-xs text-gray-500">Unlock a new toilet game</p>
+                      <h3 className="font-medium">{t('toilet_game')}</h3>
+                      <p className="text-xs text-gray-500">{t('unlock_game')}</p>
                     </div>
                   </div>
                   <Button className="px-3 py-1 bg-primary text-secondary rounded-lg text-sm font-medium">
@@ -124,8 +126,8 @@ export default function Rewards() {
                   <div className="flex items-center gap-3">
                     <span className="text-2xl">👑</span>
                     <div>
-                      <h3 className="font-medium">Premium Status</h3>
-                      <p className="text-xs text-gray-500">No ads + extra features</p>
+                      <h3 className="font-medium">{t('premium_status')}</h3>
+                      <p className="text-xs text-gray-500">{t('premium_features')}</p>
                     </div>
                   </div>
                   <Button className="px-3 py-1 bg-primary text-secondary rounded-lg text-sm font-medium">
@@ -137,8 +139,8 @@ export default function Rewards() {
                   <div className="flex items-center gap-3">
                     <span className="text-2xl">📊</span>
                     <div>
-                      <h3 className="font-medium">Advanced Analytics</h3>
-                      <p className="text-xs text-gray-500">Detailed health insights</p>
+                      <h3 className="font-medium">{t('advanced_analytics')}</h3>
+                      <p className="text-xs text-gray-500">{t('health_insights')}</p>
                     </div>
                   </div>
                   <Button className="px-3 py-1 bg-primary text-secondary rounded-lg text-sm font-medium">
@@ -150,8 +152,8 @@ export default function Rewards() {
                   <div className="flex items-center gap-3">
                     <span className="text-2xl">🏆</span>
                     <div>
-                      <h3 className="font-medium">Custom Achievements</h3>
-                      <p className="text-xs text-gray-500">Create your own goals</p>
+                      <h3 className="font-medium">{t('custom_achievements')}</h3>
+                      <p className="text-xs text-gray-500">{t('create_goals')}</p>
                     </div>
                   </div>
                   <Button className="px-3 py-1 bg-primary text-secondary rounded-lg text-sm font-medium">
