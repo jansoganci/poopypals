@@ -1,4 +1,5 @@
 import { Settings, Sun, Moon, Globe } from "lucide-react";
+import NotificationCenter from "./NotificationCenter";
 import { useTheme } from "next-themes";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
@@ -70,6 +71,8 @@ export default function Header() {
               theme === 'dark' ? <Sun size={22} /> : <Moon size={22} />
             )}
           </button>
+          
+          <NotificationCenter />
           
           <button className="p-2 text-secondary rounded-full hover:bg-primary/20">
             <Settings size={22} />

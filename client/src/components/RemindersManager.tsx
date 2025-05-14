@@ -291,7 +291,7 @@ export default function RemindersManager() {
                 
                 <DialogFooter>
                   <Button type="button" variant="outline" onClick={() => setOpen(false)}>
-                    {t('cancel')}
+                    {t('reminder_cancel')}
                   </Button>
                   <Button type="submit" disabled={createReminderMutation.isPending}>
                     {createReminderMutation.isPending ? (
