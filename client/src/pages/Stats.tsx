@@ -4,11 +4,12 @@ import { usePoopContext } from "@/context/PoopContext";
 import { BarChart, PieChart, RadarChart } from "@/components/ui/recharts";
 import { addDays, format, subDays, getDay, isWithinInterval, startOfDay, endOfDay, setHours, addWeeks, subWeeks } from "date-fns";
 import { useTranslation } from "react-i18next";
-import { Sparkles, Award, Calendar, Clock, ArrowUp, BarChart3, ActivitySquare, TrendingUp, Droplets, ThumbsUp, Heart } from "lucide-react";
+import { Sparkles, Award, Calendar, Clock, ArrowUp, BarChart3, ActivitySquare, TrendingUp, Droplets, ThumbsUp, Heart, LineChart } from "lucide-react";
 import { motion } from "framer-motion";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import { useLocation } from "wouter";
 import { 
   LineChart as RechartsLineChart, 
   Line, 
@@ -86,6 +87,7 @@ const StatCard = ({ title, value, icon: Icon, trend, trendLabel, valueLabel, cla
 export default function Stats() {
   const { logs } = usePoopContext();
   const { t } = useTranslation();
+  const [, navigate] = useLocation();
   
   // Generate data for last 7 days with fancy animation
   const last7Days = Array.from({ length: 7 }, (_, i) => {
@@ -303,7 +305,17 @@ export default function Stats() {
   return (
     <div className="p-4 pb-20">
       <div className="flex flex-col space-y-2 mb-6">
-        <h1 className="text-2xl font-bold text-secondary">{t('statistics')}</h1>
+        <div className="flex justify-between items-center">
+          <h1 className="text-2xl font-bold text-secondary">{t('statistics')}</h1>
+          <Button 
+            variant="outline" 
+            size="sm" 
+            onClick={() => navigate('/analytics')}
+            className="text-xs"
+          >
+            <LineChart className="w-4 h-4 mr-1" /> {t('advanced_analytics')}
+          </Button>
+        </div>
         <p className="text-sm text-muted-foreground">{t('stats_description')}</p>
       </div>
       

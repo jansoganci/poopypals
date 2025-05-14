@@ -924,14 +924,29 @@ const HealthCorrelations = ({ logs }: { logs: any[] }) => {
   );
 };
 
+// Define types for insights
+type BaseInsight = {
+  title: string;
+  description: string;
+  icon: React.ElementType;
+  variant: "default" | "warning" | "success" | "info";
+};
+
+type ActionInsight = BaseInsight & {
+  action: () => void;
+  actionText: string;
+};
+
+type Insight = BaseInsight | ActionInsight;
+
 // Insights and Recommendations Component
 const InsightsRecommendations = ({ logs }: { logs: any[] }) => {
   const { t } = useTranslation();
   const [, navigate] = useLocation();
   
   // Generate personalized insights based on data
-  const generateInsights = () => {
-    const insights = [];
+  const generateInsights = (): Insight[] => {
+    const insights: Insight[] = [];
     
     // Check if user has enough data
     if (logs.length < 5) {
@@ -1027,17 +1042,32 @@ const InsightsRecommendations = ({ logs }: { logs: any[] }) => {
       </CardHeader>
       <CardContent>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {insights.map((insight, index) => (
-            <InsightCard
-              key={index}
-              title={insight.title}
-              description={insight.description}
-              icon={insight.icon}
-              variant={insight.variant}
-              action={insight.action}
-              actionText={insight.actionText}
-            />
-          ))}
+          {insights.map((insight, index) => {
+            // Check if insight has action and actionText properties
+            if ('action' in insight && 'actionText' in insight) {
+              return (
+                <InsightCard
+                  key={index}
+                  title={insight.title}
+                  description={insight.description}
+                  icon={insight.icon}
+                  variant={insight.variant}
+                  action={insight.action}
+                  actionText={insight.actionText}
+                />
+              );
+            } else {
+              return (
+                <InsightCard
+                  key={index}
+                  title={insight.title}
+                  description={insight.description}
+                  icon={insight.icon}
+                  variant={insight.variant}
+                />
+              );
+            }
+          })}
         </div>
       </CardContent>
       <CardFooter className="border-t text-xs text-muted-foreground">
@@ -1128,11 +1158,11 @@ export default function Analytics() {
       },
       quality: {
         value: `${qualityScore}%`,
-        trend: qualityScore > 70 ? "up" : qualityScore < 50 ? "down" : "neutral"
+        trend: (qualityScore > 70 ? "up" : qualityScore < 50 ? "down" : "neutral") as "up" | "down" | "neutral"
       },
       stability: {
         value: `${consistencyStability}%`,
-        trend: consistencyStability > 70 ? "up" : consistencyStability < 40 ? "down" : "neutral"
+        trend: (consistencyStability > 70 ? "up" : consistencyStability < 40 ? "down" : "neutral") as "up" | "down" | "neutral"
       }
     };
   }, [logs, t]);
