@@ -8,6 +8,7 @@ import { Slider } from "@/components/ui/slider";
 import { useToast } from "@/hooks/use-toast";
 import { usePoopContext } from "@/context/PoopContext";
 import { X, Plus, Minus } from "lucide-react";
+import { useTranslation } from "react-i18next";
 
 interface LoggingFormProps {
   isOpen: boolean;
@@ -17,6 +18,7 @@ interface LoggingFormProps {
 export default function LoggingForm({ isOpen, onClose }: LoggingFormProps) {
   const { addLog } = usePoopContext();
   const { toast } = useToast();
+  const { t } = useTranslation();
   
   const [formData, setFormData] = useState({
     dateTime: new Date().toISOString().slice(0, 16),
@@ -27,10 +29,10 @@ export default function LoggingForm({ isOpen, onClose }: LoggingFormProps) {
   });
   
   const ratingOptions = [
-    { value: "excellent", emoji: "🤩", label: "Excellent" },
-    { value: "good", emoji: "😊", label: "Good" },
-    { value: "okay", emoji: "😐", label: "Okay" },
-    { value: "bad", emoji: "😣", label: "Difficult" },
+    { value: "excellent", emoji: "🤩", label: t('excellent') },
+    { value: "good", emoji: "😊", label: t('good') },
+    { value: "okay", emoji: "😐", label: t('ok') },
+    { value: "bad", emoji: "😣", label: t('bad') },
   ];
   
   const handleDurationChange = (change: number) => {
@@ -55,8 +57,8 @@ export default function LoggingForm({ isOpen, onClose }: LoggingFormProps) {
     });
     
     toast({
-      title: "Success!",
-      description: "Your achievement has been logged 🎉",
+      title: t('submit'),
+      description: t('status_card_description'),
     });
     
     onClose();
@@ -67,7 +69,7 @@ export default function LoggingForm({ isOpen, onClose }: LoggingFormProps) {
       <DialogContent className="sm:max-w-md rounded-t-2xl">
         <DialogHeader>
           <div className="flex justify-between items-center">
-            <DialogTitle className="text-xl font-bold text-secondary">Log Your Business</DialogTitle>
+            <DialogTitle className="text-xl font-bold text-secondary">{t('log_title')}</DialogTitle>
             <DialogClose className="p-1 text-gray-500 rounded-full hover:bg-gray-100">
               <X size={20} />
             </DialogClose>
@@ -77,7 +79,7 @@ export default function LoggingForm({ isOpen, onClose }: LoggingFormProps) {
         <form onSubmit={handleSubmit}>
           {/* Date & Time Selector */}
           <div className="mb-4">
-            <Label className="text-gray-700 mb-2 font-semibold" htmlFor="dateTime">Date & Time</Label>
+            <Label className="text-gray-700 mb-2 font-semibold" htmlFor="dateTime">{t('date_time')}</Label>
             <Input 
               type="datetime-local" 
               id="dateTime" 
@@ -89,7 +91,7 @@ export default function LoggingForm({ isOpen, onClose }: LoggingFormProps) {
 
           {/* Duration Selector */}
           <div className="mb-4">
-            <Label className="text-gray-700 mb-2 font-semibold" htmlFor="duration">Duration (minutes)</Label>
+            <Label className="text-gray-700 mb-2 font-semibold" htmlFor="duration">{t('duration')} ({t('minutes')})</Label>
             <div className="flex items-center space-x-3">
               <Button 
                 type="button" 
@@ -121,7 +123,7 @@ export default function LoggingForm({ isOpen, onClose }: LoggingFormProps) {
 
           {/* Quality Rating */}
           <div className="mb-4">
-            <Label className="text-gray-700 mb-2 font-semibold">How was it?</Label>
+            <Label className="text-gray-700 mb-2 font-semibold">{t('rating')}</Label>
             <div className="flex justify-between">
               {ratingOptions.map((option) => (
                 <Button 
@@ -140,12 +142,12 @@ export default function LoggingForm({ isOpen, onClose }: LoggingFormProps) {
 
           {/* Optional Notes */}
           <div className="mb-4">
-            <Label className="text-gray-700 mb-2 font-semibold" htmlFor="notes">Notes (Optional)</Label>
+            <Label className="text-gray-700 mb-2 font-semibold" htmlFor="notes">{t('notes')}</Label>
             <Textarea 
               id="notes" 
               className="w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary" 
               rows={2} 
-              placeholder="Any details to remember..."
+              placeholder={t('notes_placeholder')}
               value={formData.notes}
               onChange={e => setFormData({...formData, notes: e.target.value})}
             />
@@ -153,7 +155,7 @@ export default function LoggingForm({ isOpen, onClose }: LoggingFormProps) {
 
           {/* Consistency Scale - Bristol Stool Chart */}
           <div className="mb-6">
-            <Label className="text-gray-700 mb-2 font-semibold">Consistency</Label>
+            <Label className="text-gray-700 mb-2 font-semibold">{t('consistency')}</Label>
             <div className="relative pt-1">
               <Slider 
                 value={[formData.consistency]}
@@ -163,9 +165,9 @@ export default function LoggingForm({ isOpen, onClose }: LoggingFormProps) {
                 onValueChange={handleConsistencyChange}
               />
               <div className="flex justify-between text-xs text-gray-600 px-1 mt-1">
-                <span>Hard</span>
-                <span>Normal</span>
-                <span>Liquid</span>
+                <span>{t('hard')}</span>
+                <span>{t('normal')}</span>
+                <span>{t('very_soft')}</span>
               </div>
             </div>
           </div>
@@ -176,7 +178,7 @@ export default function LoggingForm({ isOpen, onClose }: LoggingFormProps) {
             className="w-full py-4 px-6 bg-primary text-secondary font-bold rounded-xl shadow-md hover:shadow-lg flex items-center justify-center space-x-2 transition-all"
           >
             <span className="text-xl">💩</span>
-            <span>LOG IT NOW</span>
+            <span>{t('log_button').toUpperCase()}</span>
           </Button>
         </form>
       </DialogContent>
