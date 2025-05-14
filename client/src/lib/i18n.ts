@@ -282,6 +282,288 @@ const resources = {
       "see_results": "Voir les Résultats",
       "take_again": "Refaire le Quiz"
     }
+  },
+  
+  zh: {
+    translation: {
+      // Common
+      "app_name": "便便伙伴",
+      "loading": "加载中...",
+      
+      // Navigation
+      "nav_home": "首页",
+      "nav_stats": "统计",
+      "nav_rewards": "奖励",
+      "nav_profile": "个人资料",
+      
+      // Home page
+      "recent_activity": "最近活动",
+      "today": "今天",
+      "yesterday": "昨天",
+      "log_button": "记录",
+      "status_card_title": "连续状态",
+      "status_card_description": "做得很好！",
+      "feature_grid_title": "跟踪你的进度",
+      
+      // Logging form
+      "log_title": "记录排便",
+      "date_time": "日期和时间",
+      "duration": "持续时间",
+      "minutes": "分钟",
+      "rating": "评价你的体验",
+      "bad": "差",
+      "ok": "一般",
+      "good": "好",
+      "excellent": "很好！",
+      "consistency": "稠度",
+      "very_soft": "非常软",
+      "soft": "软",
+      "normal": "正常",
+      "hard": "硬",
+      "very_hard": "非常硬",
+      "notes": "备注（可选）",
+      "notes_placeholder": "添加任何注意事项或观察...",
+      "submit": "保存记录",
+      "cancel": "取消",
+      
+      // Rewards page
+      "rewards": "奖励",
+      "flush_funds": "冲水基金",
+      "achievements": "成就",
+      "achievements_unlocked": "你已解锁 {{count}} 个成就",
+      "reward_shop": "奖励商店",
+      "spend_funds": "花费你的冲水基金",
+      
+      // Achievements
+      "achievement_gallery": "成就展示",
+      "collect_all": "收集所有成就以赚取冲水基金",
+      "quiz_title": "发现你的便便个性！",
+      "quiz_description": "参加我们的测验解锁特殊成就和健康提示",
+      "take_quiz": "参加测验",
+      "unlocked": "已解锁",
+      "locked": "已锁定",
+      "progress": "进度",
+      "health_tip": "健康提示：",
+      
+      // Profile page
+      "edit_profile": "编辑资料",
+      "settings": "设置",
+      "notifications": "通知",
+      "dark_mode": "深色模式",
+      "light_mode": "浅色模式",
+      "language": "语言",
+      "privacy": "隐私",
+      "help_support": "帮助与支持",
+      "log_out": "退出登录",
+      "version": "便便伙伴 v1.0.0",
+      "copyright": "© 2023 便便伙伴公司",
+      
+      // Stats page
+      "statistics": "统计",
+      "weekly_overview": "每周概览",
+      "monthly_trends": "月度趋势",
+      "consistency_chart": "稠度图表",
+      "duration_avg": "平均时长",
+      "frequency": "频率",
+      "streak": "连续",
+      "longest_streak": "最长连续",
+      "total_logs": "总记录",
+      
+      // Personality quiz
+      "personality_quiz": "便便个性测验",
+      "your_personality": "你的便便个性",
+      "next_question": "下一问题",
+      "see_results": "查看结果",
+      "take_again": "再次测验"
+    }
+  },
+  
+  ko: {
+    translation: {
+      // Common
+      "app_name": "푸피 팔",
+      "loading": "로딩 중...",
+      
+      // Navigation
+      "nav_home": "홈",
+      "nav_stats": "통계",
+      "nav_rewards": "보상",
+      "nav_profile": "프로필",
+      
+      // Home page
+      "recent_activity": "최근 활동",
+      "today": "오늘",
+      "yesterday": "어제",
+      "log_button": "기록하기",
+      "status_card_title": "연속 상태",
+      "status_card_description": "잘 하고 있어요!",
+      "feature_grid_title": "진행 상황 추적",
+      
+      // Logging form
+      "log_title": "배변 기록",
+      "date_time": "날짜 및 시간",
+      "duration": "지속 시간",
+      "minutes": "분",
+      "rating": "경험 평가",
+      "bad": "나쁨",
+      "ok": "보통",
+      "good": "좋음",
+      "excellent": "최고!",
+      "consistency": "굳기",
+      "very_soft": "매우 부드러움",
+      "soft": "부드러움",
+      "normal": "보통",
+      "hard": "단단함",
+      "very_hard": "매우 단단함",
+      "notes": "메모 (선택사항)",
+      "notes_placeholder": "관찰이나 메모 추가...",
+      "submit": "기록 저장",
+      "cancel": "취소",
+      
+      // Rewards page
+      "rewards": "보상",
+      "flush_funds": "플러시 펀드",
+      "achievements": "업적",
+      "achievements_unlocked": "{{count}}개의 업적을 잠금 해제했습니다",
+      "reward_shop": "보상 상점",
+      "spend_funds": "플러시 펀드 사용하기",
+      
+      // Achievements
+      "achievement_gallery": "업적 갤러리",
+      "collect_all": "모든 업적을 수집하여 플러시 펀드 획득",
+      "quiz_title": "당신의 배변 성격을 발견하세요!",
+      "quiz_description": "퀴즈를 풀어 특별한 업적과 건강 팁 얻기",
+      "take_quiz": "퀴즈 풀기",
+      "unlocked": "잠금 해제됨",
+      "locked": "잠김",
+      "progress": "진행도",
+      "health_tip": "건강 팁:",
+      
+      // Profile page
+      "edit_profile": "프로필 편집",
+      "settings": "설정",
+      "notifications": "알림",
+      "dark_mode": "다크 모드",
+      "light_mode": "라이트 모드",
+      "language": "언어",
+      "privacy": "개인정보",
+      "help_support": "도움말 및 지원",
+      "log_out": "로그아웃",
+      "version": "푸피 팔 v1.0.0",
+      "copyright": "© 2023 푸피 팔 Inc.",
+      
+      // Stats page
+      "statistics": "통계",
+      "weekly_overview": "주간 개요",
+      "monthly_trends": "월간 트렌드",
+      "consistency_chart": "굳기 차트",
+      "duration_avg": "평균 시간",
+      "frequency": "빈도",
+      "streak": "연속",
+      "longest_streak": "최장 연속",
+      "total_logs": "총 기록",
+      
+      // Personality quiz
+      "personality_quiz": "배변 성격 퀴즈",
+      "your_personality": "당신의 배변 성격",
+      "next_question": "다음 질문",
+      "see_results": "결과 보기",
+      "take_again": "다시 풀기"
+    }
+  },
+  
+  ja: {
+    translation: {
+      // Common
+      "app_name": "プーピーパル",
+      "loading": "読み込み中...",
+      
+      // Navigation
+      "nav_home": "ホーム",
+      "nav_stats": "統計",
+      "nav_rewards": "報酬",
+      "nav_profile": "プロフィール",
+      
+      // Home page
+      "recent_activity": "最近の活動",
+      "today": "今日",
+      "yesterday": "昨日",
+      "log_button": "記録する",
+      "status_card_title": "連続状況",
+      "status_card_description": "素晴らしい調子です！",
+      "feature_grid_title": "進捗を追跡する",
+      
+      // Logging form
+      "log_title": "排便を記録",
+      "date_time": "日時",
+      "duration": "所要時間",
+      "minutes": "分",
+      "rating": "体験を評価",
+      "bad": "悪い",
+      "ok": "普通",
+      "good": "良い",
+      "excellent": "素晴らしい！",
+      "consistency": "硬さ",
+      "very_soft": "とても柔らかい",
+      "soft": "柔らかい",
+      "normal": "普通",
+      "hard": "硬い",
+      "very_hard": "とても硬い",
+      "notes": "メモ（任意）",
+      "notes_placeholder": "観察や気づきを追加...",
+      "submit": "記録を保存",
+      "cancel": "キャンセル",
+      
+      // Rewards page
+      "rewards": "報酬",
+      "flush_funds": "フラッシュファンド",
+      "achievements": "実績",
+      "achievements_unlocked": "{{count}}個の実績をアンロックしました",
+      "reward_shop": "報酬ショップ",
+      "spend_funds": "フラッシュファンドを使う",
+      
+      // Achievements
+      "achievement_gallery": "実績ギャラリー",
+      "collect_all": "すべての実績を集めてフラッシュファンドを獲得しましょう",
+      "quiz_title": "あなたのウンチパーソナリティを発見！",
+      "quiz_description": "クイズに答えて特別な実績と健康アドバイスを獲得",
+      "take_quiz": "クイズに挑戦",
+      "unlocked": "解除済み",
+      "locked": "未解除",
+      "progress": "進捗",
+      "health_tip": "健康アドバイス：",
+      
+      // Profile page
+      "edit_profile": "プロフィール編集",
+      "settings": "設定",
+      "notifications": "通知",
+      "dark_mode": "ダークモード",
+      "light_mode": "ライトモード",
+      "language": "言語",
+      "privacy": "プライバシー",
+      "help_support": "ヘルプとサポート",
+      "log_out": "ログアウト",
+      "version": "プーピーパル v1.0.0",
+      "copyright": "© 2023 プーピーパル Inc.",
+      
+      // Stats page
+      "statistics": "統計",
+      "weekly_overview": "週間概要",
+      "monthly_trends": "月間傾向",
+      "consistency_chart": "硬さチャート",
+      "duration_avg": "平均時間",
+      "frequency": "頻度",
+      "streak": "連続",
+      "longest_streak": "最長連続",
+      "total_logs": "総記録数",
+      
+      // Personality quiz
+      "personality_quiz": "ウンチパーソナリティクイズ",
+      "your_personality": "あなたのウンチパーソナリティ",
+      "next_question": "次の質問",
+      "see_results": "結果を見る",
+      "take_again": "もう一度挑戦"
+    }
   }
 };
 

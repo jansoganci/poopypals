@@ -8,7 +8,10 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 const languageOptions = [
   { value: 'en', label: 'English' },
   { value: 'es', label: 'Español' },
-  { value: 'fr', label: 'Français' }
+  { value: 'fr', label: 'Français' },
+  { value: 'zh', label: '中文' },
+  { value: 'ko', label: '한국어' },
+  { value: 'ja', label: '日本語' }
 ];
 
 export default function Header() {
