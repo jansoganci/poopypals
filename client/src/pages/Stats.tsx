@@ -3,9 +3,11 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { usePoopContext } from "@/context/PoopContext";
 import { BarChart, AreaChart } from "@/components/ui/chart";
 import { format, subDays } from "date-fns";
+import { useTranslation } from "react-i18next";
 
 export default function Stats() {
   const { logs } = usePoopContext();
+  const { t } = useTranslation();
   
   // Generate data for last 7 days
   const last7Days = Array.from({ length: 7 }, (_, i) => {
@@ -28,10 +30,10 @@ export default function Stats() {
   }, {});
   
   const ratingLabels: Record<string, string> = {
-    excellent: "Excellent",
-    good: "Good",
-    okay: "Okay",
-    bad: "Difficult"
+    excellent: t('excellent'),
+    good: t('good'),
+    okay: t('ok'),
+    bad: t('bad')
   };
   
   const ratingData = Object.entries(ratingCounts).map(([rating, count]) => ({
@@ -45,26 +47,34 @@ export default function Stats() {
     return acc;
   }, {});
   
+  const consistencyTypes: Record<string, string> = {
+    1: t('very_hard'),
+    2: t('hard'),
+    3: t('normal'),
+    4: t('soft'),
+    5: t('very_soft')
+  };
+  
   const consistencyData = Object.entries(consistencyCounts).map(([value, count]) => ({
-    name: `Type ${value}`,
+    name: consistencyTypes[value] || `${t('consistency')} ${value}`,
     value: count
   }));
   
   return (
     <div className="p-4 pb-20">
-      <h1 className="text-2xl font-bold text-secondary mb-4">Your Statistics</h1>
+      <h1 className="text-2xl font-bold text-secondary mb-4">{t('statistics')}</h1>
       
       <Tabs defaultValue="frequency">
         <TabsList className="grid grid-cols-3 mb-4">
-          <TabsTrigger value="frequency">Frequency</TabsTrigger>
-          <TabsTrigger value="ratings">Ratings</TabsTrigger>
-          <TabsTrigger value="consistency">Consistency</TabsTrigger>
+          <TabsTrigger value="frequency">{t('frequency')}</TabsTrigger>
+          <TabsTrigger value="ratings">{t('rating')}</TabsTrigger>
+          <TabsTrigger value="consistency">{t('consistency')}</TabsTrigger>
         </TabsList>
         
         <TabsContent value="frequency">
           <Card>
             <CardHeader>
-              <CardTitle>Daily Frequency</CardTitle>
+              <CardTitle>{t('weekly_overview')}</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="h-80">
@@ -73,7 +83,7 @@ export default function Stats() {
                   index="name"
                   categories={["count"]}
                   colors={["primary"]}
-                  valueFormatter={(value) => `${value} logs`}
+                  valueFormatter={(value) => `${value} ${t('total_logs').toLowerCase()}`}
                   showAnimation
                 />
               </div>
@@ -84,7 +94,7 @@ export default function Stats() {
         <TabsContent value="ratings">
           <Card>
             <CardHeader>
-              <CardTitle>Experience Ratings</CardTitle>
+              <CardTitle>{t('rating')}</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="h-80">
@@ -93,7 +103,7 @@ export default function Stats() {
                   index="name"
                   categories={["value"]}
                   colors={["primary"]}
-                  valueFormatter={(value) => `${value} logs`}
+                  valueFormatter={(value) => `${value} ${t('total_logs').toLowerCase()}`}
                   showAnimation
                 />
               </div>
@@ -104,7 +114,7 @@ export default function Stats() {
         <TabsContent value="consistency">
           <Card>
             <CardHeader>
-              <CardTitle>Bristol Stool Chart Distribution</CardTitle>
+              <CardTitle>{t('consistency_chart')}</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="h-80">
@@ -113,7 +123,7 @@ export default function Stats() {
                   index="name"
                   categories={["value"]}
                   colors={["primary"]}
-                  valueFormatter={(value) => `${value} logs`}
+                  valueFormatter={(value) => `${value} ${t('total_logs').toLowerCase()}`}
                   showAnimation
                 />
               </div>
@@ -124,29 +134,29 @@ export default function Stats() {
       
       <Card className="mt-4">
         <CardHeader>
-          <CardTitle>Summary</CardTitle>
+          <CardTitle>{t('monthly_trends')}</CardTitle>
         </CardHeader>
         <CardContent>
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <p className="text-sm text-muted-foreground">Total Logs</p>
+              <p className="text-sm text-muted-foreground">{t('total_logs')}</p>
               <p className="text-2xl font-bold text-secondary">{logs.length}</p>
             </div>
             <div>
-              <p className="text-sm text-muted-foreground">Avg. Duration</p>
+              <p className="text-sm text-muted-foreground">{t('duration_avg')}</p>
               <p className="text-2xl font-bold text-secondary">
-                {logs.length ? Math.round(logs.reduce((sum, log) => sum + log.duration, 0) / logs.length) : 0} min
+                {logs.length ? Math.round(logs.reduce((sum, log) => sum + log.duration, 0) / logs.length) : 0} {t('minutes').toLowerCase()}
               </p>
             </div>
             <div>
-              <p className="text-sm text-muted-foreground">Best Time</p>
+              <p className="text-sm text-muted-foreground">{t('frequency')}</p>
               <p className="text-2xl font-bold text-secondary">
                 {logs.length ? format(new Date(logs[0].dateTime), 'h:mm a') : 'N/A'}
               </p>
             </div>
             <div>
-              <p className="text-sm text-muted-foreground">Current Streak</p>
-              <p className="text-2xl font-bold text-secondary">5 days</p>
+              <p className="text-sm text-muted-foreground">{t('streak')}</p>
+              <p className="text-2xl font-bold text-secondary">5 {t('streak').toLowerCase()}</p>
             </div>
           </div>
         </CardContent>
