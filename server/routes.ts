@@ -7,7 +7,10 @@ import { checkChallengeProgress, assignRandomChallenges } from "./challengeUtils
 import { 
   insertPoopLogSchema, 
   insertAvatarComponentSchema, 
-  insertUserAvatarSchema 
+  insertUserAvatarSchema,
+  insertNotificationSchema,
+  insertNotificationPreferencesSchema,
+  insertReminderSchema 
 } from "@shared/schema";
 import { fromZodError } from "zod-validation-error";
 

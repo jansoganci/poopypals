@@ -1,11 +1,15 @@
 import { 
   users, poopLogs, achievements, challenges, userChallenges,
   avatarComponents, userAvatarComponents, userAvatars,
+  notifications, notificationPreferences, reminders,
   type User, type InsertUser, type PoopLog, type Achievement,
   type Challenge, type InsertChallenge, type UserChallenge, type InsertUserChallenge,
   type AvatarComponent, type InsertAvatarComponent, 
   type UserAvatarComponent, type InsertUserAvatarComponent,
-  type UserAvatar, type InsertUserAvatar
+  type UserAvatar, type InsertUserAvatar,
+  type Notification, type InsertNotification,
+  type NotificationPreferences, type InsertNotificationPreferences,
+  type Reminder, type InsertReminder
 } from "@shared/schema";
 import { db } from "./db";
 import { eq, desc, and, gte, lte, sql } from "drizzle-orm";
@@ -415,6 +419,149 @@ export class DatabaseStorage implements IStorage {
         .returning();
       return newAvatar;
     }
+  }
+  
+  // Notification methods
+  async createNotification(notificationData: InsertNotification): Promise<Notification> {
+    const [notification] = await db
+      .insert(notifications)
+      .values(notificationData)
+      .returning();
+    return notification;
+  }
+
+  async getNotificationById(id: number): Promise<Notification | undefined> {
+    const [notification] = await db
+      .select()
+      .from(notifications)
+      .where(eq(notifications.id, id));
+    return notification;
+  }
+
+  async getUserNotifications(userId: number, limit?: number): Promise<Notification[]> {
+    const query = db
+      .select()
+      .from(notifications)
+      .where(eq(notifications.userId, userId))
+      .orderBy(desc(notifications.createdAt));
+
+    // If limit is specified, use it
+    const results = limit ? await query.limit(limit) : await query;
+    return results;
+  }
+
+  async markNotificationAsRead(id: number): Promise<Notification> {
+    const [notification] = await db
+      .update(notifications)
+      .set({ isRead: true })
+      .where(eq(notifications.id, id))
+      .returning();
+    return notification;
+  }
+
+  async markAllUserNotificationsAsRead(userId: number): Promise<void> {
+    await db
+      .update(notifications)
+      .set({ isRead: true })
+      .where(eq(notifications.userId, userId));
+  }
+
+  async deleteNotification(id: number): Promise<void> {
+    await db
+      .delete(notifications)
+      .where(eq(notifications.id, id));
+  }
+
+  // Notification preferences methods
+  async getUserNotificationPreferences(userId: number): Promise<NotificationPreferences | undefined> {
+    const [preferences] = await db
+      .select()
+      .from(notificationPreferences)
+      .where(eq(notificationPreferences.userId, userId));
+    return preferences;
+  }
+
+  async createOrUpdateNotificationPreferences(userId: number, preferences: Partial<InsertNotificationPreferences>): Promise<NotificationPreferences> {
+    // Check if preferences exist
+    const existingPreferences = await this.getUserNotificationPreferences(userId);
+    
+    if (existingPreferences) {
+      // Update existing preferences
+      const [updatedPreferences] = await db
+        .update(notificationPreferences)
+        .set({ 
+          ...preferences,
+          updatedAt: new Date()
+        })
+        .where(eq(notificationPreferences.userId, userId))
+        .returning();
+      return updatedPreferences;
+    } else {
+      // Create new preferences
+      const [newPreferences] = await db
+        .insert(notificationPreferences)
+        .values({
+          userId,
+          ...preferences
+        })
+        .returning();
+      return newPreferences;
+    }
+  }
+
+  // Reminder methods
+  async createReminder(reminderData: InsertReminder): Promise<Reminder> {
+    const [reminder] = await db
+      .insert(reminders)
+      .values(reminderData)
+      .returning();
+    return reminder;
+  }
+
+  async getReminderById(id: number): Promise<Reminder | undefined> {
+    const [reminder] = await db
+      .select()
+      .from(reminders)
+      .where(eq(reminders.id, id));
+    return reminder;
+  }
+
+  async getUserReminders(userId: number): Promise<Reminder[]> {
+    return await db
+      .select()
+      .from(reminders)
+      .where(eq(reminders.userId, userId))
+      .orderBy(desc(reminders.createdAt));
+  }
+
+  async updateReminder(id: number, reminderData: Partial<InsertReminder>): Promise<Reminder> {
+    const [reminder] = await db
+      .update(reminders)
+      .set({ 
+        ...reminderData,
+        updatedAt: new Date()
+      })
+      .where(eq(reminders.id, id))
+      .returning();
+    return reminder;
+  }
+
+  async deleteReminder(id: number): Promise<void> {
+    await db
+      .delete(reminders)
+      .where(eq(reminders.id, id));
+  }
+
+  async toggleReminderActive(id: number, isActive: boolean): Promise<Reminder> {
+    const [reminder] = await db
+      .update(reminders)
+      .set({ 
+        isActive,
+        updatedAt: new Date()
+      })
+      .where(eq(reminders.id, id))
+      .returning();
+    return reminder;
   }
 
   // Initialize database with a default user if it doesn't exist
