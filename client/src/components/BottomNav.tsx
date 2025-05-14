@@ -1,5 +1,5 @@
 import { useLocation } from "wouter";
-import { Home, BarChart, User, Award } from "lucide-react";
+import { Home, BarChart, User, Award, Bell } from "lucide-react";
 
 export default function BottomNav() {
   const [location, navigate] = useLocation();
@@ -39,11 +39,11 @@ export default function BottomNav() {
         </div>
         
         <div 
-          className={`bottom-tab p-2 text-center w-1/5 cursor-pointer ${location === '/rewards' ? 'active' : 'text-gray-500'}`}
-          onClick={() => handleNavigate('/rewards')}
+          className={`bottom-tab p-2 text-center w-1/5 cursor-pointer ${location === '/notifications' ? 'active' : 'text-gray-500'}`}
+          onClick={() => handleNavigate('/notifications')}
         >
-          <Award className="bottom-nav-icon mx-auto" />
-          <span className="text-xs block">Rewards</span>
+          <Bell className="bottom-nav-icon mx-auto" />
+          <span className="text-xs block">Notifications</span>
         </div>
         
         <div 

@@ -125,7 +125,7 @@ export default function NotificationCenter() {
                 {t('mark_all_read')}
               </Button>
             )}
-            <Button variant="ghost" size="sm" className="px-2">
+            <Button variant="ghost" size="sm" className="px-2" onClick={() => window.location.href = '/notifications'}>
               <Settings className="h-4 w-4" />
             </Button>
           </div>
