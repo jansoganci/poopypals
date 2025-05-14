@@ -9,6 +9,7 @@ import Stats from "@/pages/Stats";
 import Rewards from "@/pages/Rewards";
 import Profile from "@/pages/Profile";
 import Notifications from "@/pages/Notifications";
+import Analytics from "@/pages/Analytics";
 import Header from "@/components/Header";
 import BottomNav from "@/components/BottomNav";
 
@@ -22,6 +23,7 @@ function Router() {
         <Route path="/rewards" component={Rewards} />
         <Route path="/profile" component={Profile} />
         <Route path="/notifications" component={Notifications} />
+        <Route path="/analytics" component={Analytics} />
         <Route component={NotFound} />
       </Switch>
       <BottomNav />
