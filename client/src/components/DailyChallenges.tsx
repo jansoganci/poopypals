@@ -1,52 +1,20 @@
-import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
-import { toast } from "@/hooks/use-toast";
 import { Award, Flame, Target, AlertCircle } from "lucide-react";
-import { apiRequest } from '@/lib/queryClient';
 import { UserChallengeData } from '@/lib/types';
-import { useChallengeToast } from './ChallengeToast';
+import { useQuery } from '@tanstack/react-query';
 
 export default function DailyChallenges() {
   const { t } = useTranslation();
-  const { checkForCompletedChallenges } = useChallengeToast();
-  const [challenges, setChallenges] = useState<UserChallengeData[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(false);
-
-  // Fetch user challenges
-  useEffect(() => {
-    const fetchChallenges = async () => {
-      try {
-        setLoading(true);
-        const response = await apiRequest('/api/user-challenges', 'GET');
-        // Ensure the response is an array, or default to empty array
-        const data = Array.isArray(response) ? response : [];
-        setChallenges(data as UserChallengeData[]);
-      } catch (error) {
-        console.error('Error fetching challenges:', error);
-        toast({
-          title: t('error'),
-          description: t('challenge_fetch_error'),
-          variant: "destructive",
-        });
-        setError(true);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchChallenges();
-    
-    // Set up an interval to check for newly completed challenges
-    const interval = setInterval(() => {
-      checkForCompletedChallenges();
-    }, 30000); // Check every 30 seconds
-    
-    return () => clearInterval(interval);
-  }, [t, checkForCompletedChallenges]);
+  
+  // Use React Query to fetch challenges
+  const { data: challenges = [], isLoading, isError } = useQuery<UserChallengeData[]>({
+    queryKey: ['/api/user-challenges'],
+    refetchInterval: 60000, // Refetch every minute
+    staleTime: 30000, // Consider data stale after 30 seconds
+  });
 
   // Get icon based on challenge type
   const getChallengeIcon = (type: string) => {
@@ -77,7 +45,7 @@ export default function DailyChallenges() {
   };
 
   // Show empty state
-  if (!loading && (challenges.length === 0 || error)) {
+  if (!isLoading && (challenges.length === 0 || isError)) {
     return (
       <Card>
         <CardHeader>
@@ -85,7 +53,7 @@ export default function DailyChallenges() {
         </CardHeader>
         <CardContent className="pt-2">
           <div className="flex flex-col items-center justify-center p-4 text-center">
-            {error ? (
+            {isError ? (
               <>
                 <AlertCircle className="h-10 w-10 text-gray-400 mb-2" />
                 <p className="text-sm text-gray-500">{t('challenge_fetch_error')}</p>
@@ -109,7 +77,7 @@ export default function DailyChallenges() {
         <CardTitle>{t('todays_challenges')}</CardTitle>
       </CardHeader>
       <CardContent className="pt-2">
-        {loading ? (
+        {isLoading ? (
           <div className="space-y-2">
             <div className="h-12 bg-gray-200 dark:bg-gray-700 rounded animate-pulse"></div>
             <div className="h-12 bg-gray-200 dark:bg-gray-700 rounded animate-pulse"></div>

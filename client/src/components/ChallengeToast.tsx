@@ -1,25 +1,25 @@
-import { useState, useEffect } from "react";
-import { CheckCircle2, Award } from "lucide-react";
+import { useState } from "react";
 import { toast } from "@/hooks/use-toast";
 import { useTranslation } from "react-i18next";
 import { UserChallengeData } from "@/lib/types";
 import { usePoopContext } from "@/context/PoopContext";
-import { apiRequest } from "@/lib/queryClient";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 
 export function useChallengeToast() {
   const { t } = useTranslation();
   const { stats, setStats } = usePoopContext();
   const [lastChallengeCount, setLastChallengeCount] = useState(0);
+  const queryClient = useQueryClient();
   
-  const checkForCompletedChallenges = async () => {
-    try {
-      // Fetch completed challenges using apiRequest instead of fetch
-      const response = await apiRequest('/api/user-challenges', 'GET');
-      // Ensure data is an array
-      const data = Array.isArray(response) ? response : [];
-      const completedChallenges = data.filter((c: UserChallengeData) => 
-        c.isCompleted && c.completedAt
-      );
+  // Use React Query to get challenges and check for completions
+  useQuery({
+    queryKey: ['/api/user-challenges', 'toast-check'],
+    staleTime: 30000, // 30 seconds
+    refetchInterval: 60000, // 1 minute
+    select: (data: UserChallengeData[]) => {
+      if (!Array.isArray(data)) return [];
+      
+      const completedChallenges = data.filter(c => c.isCompleted && c.completedAt);
       
       // If we have more completed challenges than before, show toast
       if (completedChallenges.length > lastChallengeCount && lastChallengeCount > 0) {
@@ -42,10 +42,9 @@ export function useChallengeToast() {
       
       // Update the counter
       setLastChallengeCount(completedChallenges.length);
-    } catch (error) {
-      console.error('Error checking for completed challenges:', error);
-    }
-  };
+      return completedChallenges;
+    },
+  });
   
   const showChallengeCompletedToast = (challenge: UserChallengeData) => {
     toast({
@@ -54,6 +53,11 @@ export function useChallengeToast() {
       variant: "default",
       duration: 5000,
     });
+  };
+  
+  // Function to manually check for completed challenges - use this sparingly
+  const checkForCompletedChallenges = () => {
+    queryClient.invalidateQueries({ queryKey: ['/api/user-challenges', 'toast-check'] });
   };
   
   return { checkForCompletedChallenges };
