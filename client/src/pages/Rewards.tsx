@@ -1,37 +1,25 @@
+import { useState } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Trophy, Clock, CalendarDays, Heart } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Trophy, Brain } from "lucide-react";
 import { usePoopContext } from "@/context/PoopContext";
+import AchievementSystem, { achievements } from "@/components/AchievementSystem";
+import PersonalityQuiz from "@/components/PersonalityQuiz";
 
 export default function Rewards() {
-  const { achievements, stats } = usePoopContext();
+  const { stats } = usePoopContext();
+  const [isQuizOpen, setIsQuizOpen] = useState(false);
+  const [personality, setPersonality] = useState<any>(null);
 
-  const achievementCards = [
-    {
-      title: "Consistent Pooper",
-      description: "Maintained a 5-day streak",
-      icon: <CalendarDays className="h-10 w-10 text-amber-500" />,
-      unlocked: true,
-    },
-    {
-      title: "Speed Demon",
-      description: "Completed in under 2 minutes",
-      icon: <Clock className="h-10 w-10 text-amber-500" />,
-      unlocked: true,
-    },
-    {
-      title: "Master Logger",
-      description: "Logged 10 times",
-      icon: <Trophy className="h-10 w-10 text-amber-500" />,
-      unlocked: true,
-    },
-    {
-      title: "Health Nut",
-      description: "Perfect consistency for a week",
-      icon: <Heart className="h-10 w-10 text-amber-500" />,
-      unlocked: false,
-    }
-  ];
+  const handleCompleteQuiz = (result: any) => {
+    setPersonality(result);
+    setIsQuizOpen(false);
+    
+    // Here you could also save the personality to the user's profile
+    // or trigger an achievement for completing the quiz
+  };
 
   return (
     <div className="p-4 pb-20">
@@ -43,82 +31,144 @@ export default function Rewards() {
         </div>
       </div>
 
-      <Card className="mb-4">
-        <CardHeader>
-          <CardTitle>Achievements</CardTitle>
-          <CardDescription>You've unlocked {achievements.length} achievements</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div className="grid grid-cols-2 gap-4">
-            {achievementCards.map((achievement, index) => (
-              <div
-                key={index}
-                className={`p-4 rounded-xl border ${achievement.unlocked ? 'bg-amber-50' : 'bg-gray-100'} flex flex-col items-center text-center`}
-              >
-                <div className={`p-3 rounded-full mb-2 ${achievement.unlocked ? 'bg-amber-100' : 'bg-gray-200'}`}>
-                  {achievement.icon}
+      <Tabs defaultValue="achievements" className="mb-4">
+        <TabsList className="grid grid-cols-2 mb-4 w-full">
+          <TabsTrigger value="achievements">Achievements</TabsTrigger>
+          <TabsTrigger value="shop">Reward Shop</TabsTrigger>
+        </TabsList>
+        
+        <TabsContent value="achievements">
+          <div className="mb-4">
+            <Card className="border-2 border-amber-300 bg-amber-50">
+              <CardContent className="p-4">
+                <div className="flex items-center gap-4">
+                  <div className="flex-shrink-0">
+                    <Brain className="h-10 w-10 text-amber-500" />
+                  </div>
+                  <div className="flex-1">
+                    <h3 className="font-bold text-lg">Discover Your Poop Personality!</h3>
+                    <p className="text-sm text-gray-600">Take our quiz to unlock special achievements and learn health tips</p>
+                  </div>
+                  <Button 
+                    className="bg-amber-500 hover:bg-amber-600 text-white"
+                    onClick={() => setIsQuizOpen(true)}
+                  >
+                    Take Quiz
+                  </Button>
                 </div>
-                <h3 className="font-bold text-gray-800">{achievement.title}</h3>
-                <p className="text-xs text-gray-500 mt-1">{achievement.description}</p>
-                {achievement.unlocked ? (
-                  <Badge className="mt-2 bg-amber-500">Unlocked</Badge>
-                ) : (
-                  <Badge className="mt-2 bg-gray-400">Locked</Badge>
+                
+                {personality && (
+                  <div className="mt-4 p-3 bg-white rounded-lg border border-amber-200">
+                    <div className="flex items-center gap-2">
+                      <span className="text-xl">{personality.emoji}</span>
+                      <span className="font-medium">{personality.title}</span>
+                    </div>
+                    <p className="text-xs text-gray-500 mt-1">Click to retake the quiz and explore other personalities</p>
+                  </div>
                 )}
-              </div>
-            ))}
+              </CardContent>
+            </Card>
           </div>
-        </CardContent>
-      </Card>
-
-      <Card>
-        <CardHeader>
-          <CardTitle>Reward Shop</CardTitle>
-          <CardDescription>Spend your Flush Funds</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div className="space-y-4">
-            <div className="flex justify-between items-center p-3 border rounded-lg">
-              <div className="flex items-center gap-3">
-                <span className="text-2xl">🧻</span>
+          
+          <Card>
+            <CardHeader>
+              <div className="flex justify-between items-center">
                 <div>
-                  <h3 className="font-medium">Premium Themes</h3>
-                  <p className="text-xs text-gray-500">Customize your app</p>
+                  <CardTitle>Achievement Gallery</CardTitle>
+                  <CardDescription>Collect them all to earn Flush Funds</CardDescription>
+                </div>
+                <Trophy className="h-5 w-5 text-amber-500" />
+              </div>
+            </CardHeader>
+            <CardContent>
+              <AchievementSystem achievements={achievements} />
+            </CardContent>
+          </Card>
+        </TabsContent>
+        
+        <TabsContent value="shop">
+          <Card>
+            <CardHeader>
+              <CardTitle>Reward Shop</CardTitle>
+              <CardDescription>Spend your Flush Funds</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-4">
+                <div className="flex justify-between items-center p-3 border rounded-lg">
+                  <div className="flex items-center gap-3">
+                    <span className="text-2xl">🧻</span>
+                    <div>
+                      <h3 className="font-medium">Premium Themes</h3>
+                      <p className="text-xs text-gray-500">Customize your app</p>
+                    </div>
+                  </div>
+                  <Button className="px-3 py-1 bg-primary text-secondary rounded-lg text-sm font-medium">
+                    50 FF
+                  </Button>
+                </div>
+                
+                <div className="flex justify-between items-center p-3 border rounded-lg">
+                  <div className="flex items-center gap-3">
+                    <span className="text-2xl">🎮</span>
+                    <div>
+                      <h3 className="font-medium">Toilet Tapper Game</h3>
+                      <p className="text-xs text-gray-500">Unlock a new toilet game</p>
+                    </div>
+                  </div>
+                  <Button className="px-3 py-1 bg-primary text-secondary rounded-lg text-sm font-medium">
+                    100 FF
+                  </Button>
+                </div>
+                
+                <div className="flex justify-between items-center p-3 border rounded-lg">
+                  <div className="flex items-center gap-3">
+                    <span className="text-2xl">👑</span>
+                    <div>
+                      <h3 className="font-medium">Premium Status</h3>
+                      <p className="text-xs text-gray-500">No ads + extra features</p>
+                    </div>
+                  </div>
+                  <Button className="px-3 py-1 bg-primary text-secondary rounded-lg text-sm font-medium">
+                    200 FF
+                  </Button>
+                </div>
+                
+                <div className="flex justify-between items-center p-3 border rounded-lg">
+                  <div className="flex items-center gap-3">
+                    <span className="text-2xl">📊</span>
+                    <div>
+                      <h3 className="font-medium">Advanced Analytics</h3>
+                      <p className="text-xs text-gray-500">Detailed health insights</p>
+                    </div>
+                  </div>
+                  <Button className="px-3 py-1 bg-primary text-secondary rounded-lg text-sm font-medium">
+                    150 FF
+                  </Button>
+                </div>
+                
+                <div className="flex justify-between items-center p-3 border rounded-lg">
+                  <div className="flex items-center gap-3">
+                    <span className="text-2xl">🏆</span>
+                    <div>
+                      <h3 className="font-medium">Custom Achievements</h3>
+                      <p className="text-xs text-gray-500">Create your own goals</p>
+                    </div>
+                  </div>
+                  <Button className="px-3 py-1 bg-primary text-secondary rounded-lg text-sm font-medium">
+                    75 FF
+                  </Button>
                 </div>
               </div>
-              <button className="px-3 py-1 bg-primary text-secondary rounded-lg text-sm font-medium">
-                50 FF
-              </button>
-            </div>
-            
-            <div className="flex justify-between items-center p-3 border rounded-lg">
-              <div className="flex items-center gap-3">
-                <span className="text-2xl">🎮</span>
-                <div>
-                  <h3 className="font-medium">Bonus Game</h3>
-                  <p className="text-xs text-gray-500">Unlock a new toilet game</p>
-                </div>
-              </div>
-              <button className="px-3 py-1 bg-primary text-secondary rounded-lg text-sm font-medium">
-                100 FF
-              </button>
-            </div>
-            
-            <div className="flex justify-between items-center p-3 border rounded-lg">
-              <div className="flex items-center gap-3">
-                <span className="text-2xl">👑</span>
-                <div>
-                  <h3 className="font-medium">Premium Status</h3>
-                  <p className="text-xs text-gray-500">No ads + extra features</p>
-                </div>
-              </div>
-              <button className="px-3 py-1 bg-primary text-secondary rounded-lg text-sm font-medium">
-                200 FF
-              </button>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
+            </CardContent>
+          </Card>
+        </TabsContent>
+      </Tabs>
+      
+      <PersonalityQuiz 
+        isOpen={isQuizOpen} 
+        onClose={() => setIsQuizOpen(false)}
+        onComplete={handleCompleteQuiz}
+      />
     </div>
   );
 }
