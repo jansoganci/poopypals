@@ -1,0 +1,96 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --background: 39 100% 97%;
+  --foreground: 20 43% 22%;
+  --muted: 60 4.8% 95.9%;
+  --muted-foreground: 25 5.3% 44.7%;
+  --popover: 0 0% 100%;
+  --popover-foreground: 20 14.3% 4.1%;
+  --card: 0 0% 100%;
+  --card-foreground: 20 14.3% 4.1%;
+  --border: 20 5.9% 90%;
+  --input: 20 5.9% 90%;
+  --primary: 43 81% 60%;
+  --primary-foreground: 26 35% 23%;
+  --secondary: 26 35% 31%;
+  --secondary-foreground: 0 0% 100%;
+  --accent: 39 100% 97%;
+  --accent-foreground: 24 9.8% 10%;
+  --destructive: 0 84.2% 60.2%;
+  --destructive-foreground: 60 9.1% 97.8%;
+  --ring: 26 35% 31%;
+  --radius: 1rem;
+  
+  /* Chart colors */
+  --chart-1: 43 81% 60%;
+  --chart-2: 26 35% 31%;
+  --chart-3: 39 100% 97%;
+  --chart-4: 0 84.2% 60.2%;
+  --chart-5: 207 90% 54%;
+}
+
+.dark {
+  --background: 20 14.3% 4.1%;
+  --foreground: 60 9.1% 97.8%;
+  --muted: 12 6.5% 15.1%;
+  --muted-foreground: 24 5.4% 63.9%;
+  --popover: 20 14.3% 4.1%;
+  --popover-foreground: 60 9.1% 97.8%;
+  --card: 20 14.3% 4.1%;
+  --card-foreground: 60 9.1% 97.8%;
+  --border: 12 6.5% 15.1%;
+  --input: 12 6.5% 15.1%;
+  --primary: 43 74% 49%;
+  --primary-foreground: 60 9.1% 97.8%;
+  --secondary: 26 35% 23%;
+  --secondary-foreground: 60 9.1% 97.8%;
+  --accent: 12 6.5% 15.1%;
+  --accent-foreground: 60 9.1% 97.8%;
+  --destructive: 0 72.2% 50.6%;
+  --destructive-foreground: 60 9.1% 97.8%;
+  --ring: 35.5 91.7% 32.9%;
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply font-sans antialiased bg-background text-foreground;
+  }
+}
+
+@layer components {
+  .emoji-btn {
+    @apply transition-transform duration-150 ease-in-out;
+  }
+  
+  .emoji-btn:active {
+    @apply transform scale-90;
+  }
+  
+  .log-btn:active {
+    @apply transform scale-95;
+  }
+  
+  .bottom-nav-icon {
+    @apply inline-block text-2xl mb-1;
+  }
+  
+  .bottom-tab.active {
+    @apply text-secondary font-semibold;
+  }
+}
+
+@keyframes slideUp {
+  from { transform: translateY(100%); }
+  to { transform: translateY(0); }
+}
+
+.slide-up {
+  animation: slideUp 0.3s ease-out forwards;
+}
