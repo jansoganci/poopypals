@@ -3,6 +3,14 @@ import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import { checkChallengeProgress, assignRandomChallenges } from "./challengeUtils";
 
+// Import validation schemas
+import { 
+  insertPoopLogSchema, 
+  insertAvatarComponentSchema, 
+  insertUserAvatarSchema 
+} from "@shared/schema";
+import { fromZodError } from "zod-validation-error";
+
 export async function registerRoutes(app: Express): Promise<Server> {
   // API routes for poop logs
   app.get('/api/logs', async (req, res) => {

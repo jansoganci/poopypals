@@ -313,6 +313,90 @@ export class DatabaseStorage implements IStorage {
     };
   }
   
+  // Avatar methods
+  async createAvatarComponent(component: InsertAvatarComponent): Promise<AvatarComponent> {
+    const [newComponent] = await db
+      .insert(avatarComponents)
+      .values(component)
+      .returning();
+    return newComponent;
+  }
+
+  async getAvatarComponents(): Promise<AvatarComponent[]> {
+    return db.select().from(avatarComponents);
+  }
+
+  async getAvatarComponentsByType(type: string): Promise<AvatarComponent[]> {
+    return db.select().from(avatarComponents).where(
+      eq(avatarComponents.type, type as "head" | "eyes" | "mouth" | "accessory")
+    );
+  }
+
+  async getUserAvatarComponents(userId: number): Promise<(UserAvatarComponent & { component: AvatarComponent })[]> {
+    const result = await db
+      .select({
+        userComponent: userAvatarComponents,
+        component: avatarComponents
+      })
+      .from(userAvatarComponents)
+      .innerJoin(
+        avatarComponents,
+        eq(userAvatarComponents.componentId, avatarComponents.id)
+      )
+      .where(eq(userAvatarComponents.userId, userId));
+
+    return result.map(({ userComponent, component }) => ({
+      ...userComponent,
+      component
+    }));
+  }
+
+  async unlockAvatarComponentForUser(userId: number, componentId: number): Promise<UserAvatarComponent> {
+    const [userComponent] = await db
+      .insert(userAvatarComponents)
+      .values({
+        userId,
+        componentId
+      })
+      .returning();
+    return userComponent;
+  }
+
+  async getUserAvatar(userId: number): Promise<UserAvatar | undefined> {
+    const [avatar] = await db
+      .select()
+      .from(userAvatars)
+      .where(eq(userAvatars.userId, userId));
+    return avatar;
+  }
+
+  async updateUserAvatar(userId: number, avatarData: Partial<InsertUserAvatar>): Promise<UserAvatar> {
+    const existingAvatar = await this.getUserAvatar(userId);
+    
+    if (existingAvatar) {
+      // Update existing avatar
+      const [updatedAvatar] = await db
+        .update(userAvatars)
+        .set({
+          ...avatarData,
+          updatedAt: new Date()
+        })
+        .where(eq(userAvatars.userId, userId))
+        .returning();
+      return updatedAvatar;
+    } else {
+      // Create new avatar
+      const [newAvatar] = await db
+        .insert(userAvatars)
+        .values({
+          userId,
+          ...avatarData
+        })
+        .returning();
+      return newAvatar;
+    }
+  }
+
   // Initialize database with a default user if it doesn't exist
   async initialize(): Promise<void> {
     // Check if the demo user exists
