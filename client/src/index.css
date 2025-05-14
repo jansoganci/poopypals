@@ -18,6 +18,16 @@
   --secondary: 26 35% 31%;
   --secondary-foreground: 0 0% 100%;
   --accent: 39 100% 97%;
+  
+  /* Chart colors */
+  --amber-500: #f59e0b;
+  --purple-500: #8b5cf6;
+  --emerald-500: #10b981;
+  --blue-500: #3b82f6;
+  --pink-500: #ec4899;
+  --orange-500: #f97316;
+  --teal-500: #14b8a6;
+  --red-500: #ef4444;
   --accent-foreground: 24 9.8% 10%;
   --destructive: 0 84.2% 60.2%;
   --destructive-foreground: 60 9.1% 97.8%;

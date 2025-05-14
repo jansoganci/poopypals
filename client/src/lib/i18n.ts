@@ -158,7 +158,7 @@ const resources = {
       "premium_status": "Premium Status",
       "premium_features": "No ads + extra features",
       "advanced_analytics": "Advanced Analytics",
-      "health_insights": "Detailed health insights",
+      "detailed_insights": "Detailed health insights",
       "custom_achievements": "Custom Achievements",
       "create_goals": "Create your own goals",
       
