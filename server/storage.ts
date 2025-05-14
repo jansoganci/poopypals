@@ -49,6 +49,26 @@ export interface IStorage {
   unlockAvatarComponentForUser(userId: number, componentId: number): Promise<UserAvatarComponent>;
   getUserAvatar(userId: number): Promise<UserAvatar | undefined>;
   updateUserAvatar(userId: number, avatarData: Partial<InsertUserAvatar>): Promise<UserAvatar>;
+  
+  // Notification methods
+  createNotification(notificationData: InsertNotification): Promise<Notification>;
+  getNotificationById(id: number): Promise<Notification | undefined>;
+  getUserNotifications(userId: number, limit?: number): Promise<Notification[]>;
+  markNotificationAsRead(id: number): Promise<Notification>;
+  markAllUserNotificationsAsRead(userId: number): Promise<void>;
+  deleteNotification(id: number): Promise<void>;
+  
+  // Notification preferences methods
+  getUserNotificationPreferences(userId: number): Promise<NotificationPreferences | undefined>;
+  createOrUpdateNotificationPreferences(userId: number, preferences: Partial<InsertNotificationPreferences>): Promise<NotificationPreferences>;
+  
+  // Reminder methods
+  createReminder(reminderData: InsertReminder): Promise<Reminder>;
+  getReminderById(id: number): Promise<Reminder | undefined>;
+  getUserReminders(userId: number): Promise<Reminder[]>;
+  updateReminder(id: number, reminderData: Partial<InsertReminder>): Promise<Reminder>;
+  deleteReminder(id: number): Promise<void>;
+  toggleReminderActive(id: number, isActive: boolean): Promise<Reminder>;
 }
 
 export class DatabaseStorage implements IStorage {

@@ -1,4 +1,4 @@
-import { pgTable, text, serial, integer, boolean, timestamp, jsonb, pgEnum } from "drizzle-orm/pg-core";
+import { pgTable, text, serial, integer, boolean, timestamp, jsonb, pgEnum, varchar } from "drizzle-orm/pg-core";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
 
@@ -162,3 +162,99 @@ export type UserAvatar = typeof userAvatars.$inferSelect;
 export type InsertAvatarComponent = z.infer<typeof insertAvatarComponentSchema>;
 export type InsertUserAvatarComponent = z.infer<typeof insertUserAvatarComponentSchema>;
 export type InsertUserAvatar = z.infer<typeof insertUserAvatarSchema>;
+
+// Notification & Reminder Schema
+export const reminderFrequencyEnum = pgEnum('reminder_frequency', ['daily', 'weekly', 'custom']);
+export const notificationTypeEnum = pgEnum('notification_type', ['achievement', 'streak', 'reminder', 'system']);
+
+export const notifications = pgTable("notifications", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").notNull().references(() => users.id),
+  title: text("title").notNull(),
+  message: text("message").notNull(),
+  type: notificationTypeEnum("type").notNull(),
+  isRead: boolean("is_read").notNull().default(false),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+  iconPath: text("icon_path"),
+  actionPath: text("action_path"),
+  expiresAt: timestamp("expires_at")
+});
+
+export const notificationPreferences = pgTable("notification_preferences", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").notNull().references(() => users.id),
+  achievementNotifications: boolean("achievement_notifications").notNull().default(true),
+  streakNotifications: boolean("streak_notifications").notNull().default(true),
+  reminderNotifications: boolean("reminder_notifications").notNull().default(true),
+  emailNotifications: boolean("email_notifications").notNull().default(false),
+  pushNotifications: boolean("push_notifications").notNull().default(true),
+  doNotDisturbStart: varchar("do_not_disturb_start", { length: 8 }),  // Store as HH:MM:SS
+  doNotDisturbEnd: varchar("do_not_disturb_end", { length: 8 }),      // Store as HH:MM:SS
+  updatedAt: timestamp("updated_at").notNull().defaultNow()
+});
+
+export const reminders = pgTable("reminders", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").notNull().references(() => users.id),
+  title: text("title").notNull(),
+  message: text("message").notNull(),
+  frequency: reminderFrequencyEnum("frequency").notNull(),
+  time: varchar("time", { length: 8 }).notNull(),  // Store as HH:MM:SS
+  daysOfWeek: text("days_of_week"),  // Comma-separated days for custom frequency (e.g., "1,3,5" for Mon,Wed,Fri)
+  isActive: boolean("is_active").notNull().default(true),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+  updatedAt: timestamp("updated_at").notNull().defaultNow()
+});
+
+// Insert schemas
+export const insertNotificationSchema = createInsertSchema(notifications).pick({
+  userId: true,
+  title: true,
+  message: true,
+  type: true,
+  isRead: true,
+  iconPath: true,
+  actionPath: true,
+  expiresAt: true
+});
+
+export const insertNotificationPreferencesSchema = createInsertSchema(notificationPreferences, {
+  achievementNotifications: z.boolean().default(true),
+  streakNotifications: z.boolean().default(true),
+  reminderNotifications: z.boolean().default(true),
+  emailNotifications: z.boolean().default(false),
+  pushNotifications: z.boolean().default(true),
+  doNotDisturbStart: z.string().optional(),
+  doNotDisturbEnd: z.string().optional()
+}).pick({
+  userId: true,
+  achievementNotifications: true,
+  streakNotifications: true,
+  reminderNotifications: true,
+  emailNotifications: true,
+  pushNotifications: true,
+  doNotDisturbStart: true,
+  doNotDisturbEnd: true
+});
+
+export const insertReminderSchema = createInsertSchema(reminders, {
+  isActive: z.boolean().default(true),
+  daysOfWeek: z.string().optional()
+}).pick({
+  userId: true,
+  title: true,
+  message: true,
+  frequency: true,
+  time: true,
+  daysOfWeek: true,
+  isActive: true
+});
+
+// Types
+export type Notification = typeof notifications.$inferSelect;
+export type NotificationPreferences = typeof notificationPreferences.$inferSelect;
+export type Reminder = typeof reminders.$inferSelect;
+
+export type InsertNotification = z.infer<typeof insertNotificationSchema>;
+export type InsertNotificationPreferences = z.infer<typeof insertNotificationPreferencesSchema>;
+export type InsertReminder = z.infer<typeof insertReminderSchema>;
