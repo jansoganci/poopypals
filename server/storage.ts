@@ -1,21 +1,38 @@
-import { users, poopLogs, achievements, type User, type InsertUser, type PoopLog, type Achievement } from "@shared/schema";
+import { 
+  users, poopLogs, achievements, challenges, userChallenges,
+  type User, type InsertUser, type PoopLog, type Achievement,
+  type Challenge, type InsertChallenge, type UserChallenge, type InsertUserChallenge
+} from "@shared/schema";
 import { db } from "./db";
-import { eq, desc } from "drizzle-orm";
+import { eq, desc, and, gte, lte, sql } from "drizzle-orm";
 
 export interface IStorage {
   getUser(id: number): Promise<User | undefined>;
   getUserByUsername(username: string): Promise<User | undefined>;
   createUser(user: InsertUser): Promise<User>;
+  updateUserFlushFunds(userId: number, amount: number): Promise<User>;
   
   // Poop log methods
   createPoopLog(log: any): Promise<PoopLog>;
   getPoopLogById(id: number): Promise<PoopLog | undefined>;
   getAllPoopLogs(): Promise<PoopLog[]>;
+  getRecentPoopLogs(userId: number, days: number): Promise<PoopLog[]>;
   
   // Achievement methods
   createAchievement(achievement: any): Promise<Achievement>;
   getAchievementById(id: number): Promise<Achievement | undefined>;
   getAllAchievements(): Promise<Achievement[]>;
+  
+  // Challenge methods
+  createChallenge(challenge: InsertChallenge): Promise<Challenge>;
+  getChallengeById(id: number): Promise<Challenge | undefined>;
+  getActiveGlobalChallenges(): Promise<Challenge[]>;
+  
+  // User Challenge methods
+  assignChallengeToUser(userId: number, challengeId: number): Promise<UserChallenge>;
+  getUserActiveChallenges(userId: number): Promise<(UserChallenge & { challenge: Challenge })[]>;
+  updateUserChallengeProgress(userChallengeId: number, progress: number): Promise<UserChallenge>;
+  completeUserChallenge(userChallengeId: number): Promise<UserChallenge>;
   
   // Stats methods
   getUserStats(): Promise<any>;
@@ -108,6 +125,154 @@ export class DatabaseStorage implements IStorage {
   
   async getAllAchievements(): Promise<Achievement[]> {
     return db.select().from(achievements).orderBy(desc(achievements.unlockedAt));
+  }
+
+  // Challenge methods
+  async createChallenge(challenge: InsertChallenge): Promise<Challenge> {
+    const [newChallenge] = await db
+      .insert(challenges)
+      .values(challenge)
+      .returning();
+    return newChallenge;
+  }
+  
+  async getChallengeById(id: number): Promise<Challenge | undefined> {
+    const [challenge] = await db.select().from(challenges).where(eq(challenges.id, id));
+    return challenge;
+  }
+  
+  async getActiveGlobalChallenges(): Promise<Challenge[]> {
+    return db.select()
+      .from(challenges)
+      .where(eq(challenges.isActive, true))
+      .orderBy(desc(challenges.createdAt));
+  }
+  
+  // User Challenge methods
+  async assignChallengeToUser(userId: number, challengeId: number): Promise<UserChallenge> {
+    // Check if user already has this challenge
+    const existingChallenges = await db.select()
+      .from(userChallenges)
+      .where(
+        and(
+          eq(userChallenges.userId, userId),
+          eq(userChallenges.challengeId, challengeId),
+          eq(userChallenges.isCompleted, false)
+        )
+      );
+    
+    if (existingChallenges.length > 0) {
+      return existingChallenges[0];
+    }
+    
+    // Otherwise, assign the challenge
+    const [userChallenge] = await db
+      .insert(userChallenges)
+      .values({
+        userId,
+        challengeId,
+        progress: 0,
+        isCompleted: false
+      })
+      .returning();
+    
+    return userChallenge;
+  }
+  
+  async getUserActiveChallenges(userId: number): Promise<(UserChallenge & { challenge: Challenge })[]> {
+    const result = await db.select({
+      userChallenge: userChallenges,
+      challenge: challenges
+    })
+    .from(userChallenges)
+    .innerJoin(challenges, eq(userChallenges.challengeId, challenges.id))
+    .where(
+      and(
+        eq(userChallenges.userId, userId),
+        eq(userChallenges.isCompleted, false)
+      )
+    )
+    .orderBy(desc(userChallenges.assignedAt));
+    
+    // Flatten the result structure
+    return result.map(r => ({
+      ...r.userChallenge,
+      challenge: r.challenge
+    }));
+  }
+  
+  async updateUserChallengeProgress(userChallengeId: number, progress: number): Promise<UserChallenge> {
+    const [updatedUserChallenge] = await db
+      .update(userChallenges)
+      .set({ progress })
+      .where(eq(userChallenges.id, userChallengeId))
+      .returning();
+    
+    return updatedUserChallenge;
+  }
+  
+  async completeUserChallenge(userChallengeId: number): Promise<UserChallenge> {
+    // Get the user challenge
+    const [userChallenge] = await db.select()
+      .from(userChallenges)
+      .innerJoin(challenges, eq(userChallenges.challengeId, challenges.id))
+      .where(eq(userChallenges.id, userChallengeId));
+    
+    if (!userChallenge) {
+      throw new Error('User challenge not found');
+    }
+    
+    // Update the user challenge
+    const [updatedUserChallenge] = await db
+      .update(userChallenges)
+      .set({ 
+        isCompleted: true,
+        completedAt: new Date()
+      })
+      .where(eq(userChallenges.id, userChallengeId))
+      .returning();
+    
+    // Update the user's flush funds
+    await this.updateUserFlushFunds(
+      updatedUserChallenge.userId,
+      userChallenge.challenges.rewardAmount
+    );
+    
+    return updatedUserChallenge;
+  }
+
+  // Get recent poop logs for challenge validation
+  async getRecentPoopLogs(userId: number, days: number): Promise<PoopLog[]> {
+    const cutoffDate = new Date();
+    cutoffDate.setDate(cutoffDate.getDate() - days);
+    
+    return db.select()
+      .from(poopLogs)
+      .where(
+        and(
+          eq(poopLogs.userId, userId),
+          gte(poopLogs.dateTime, cutoffDate)
+        )
+      )
+      .orderBy(desc(poopLogs.dateTime));
+  }
+  
+  // Update user flush funds
+  async updateUserFlushFunds(userId: number, amount: number): Promise<User> {
+    const user = await this.getUser(userId);
+    if (!user) {
+      throw new Error('User not found');
+    }
+    
+    const [updatedUser] = await db
+      .update(users)
+      .set({ 
+        flushFunds: user.flushFunds + amount 
+      })
+      .where(eq(users.id, userId))
+      .returning();
+    
+    return updatedUser;
   }
   
   async getUserStats(): Promise<any> {
