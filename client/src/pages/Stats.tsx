@@ -1,7 +1,7 @@
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { usePoopContext } from "@/context/PoopContext";
-import { AreaChart, BarChart, PieChart, LineChart, RadarChart } from "@/components/ui/recharts";
+import { BarChart, PieChart, RadarChart } from "@/components/ui/recharts";
 import { addDays, format, subDays, getDay, isWithinInterval, startOfDay, endOfDay, setHours, addWeeks, subWeeks } from "date-fns";
 import { useTranslation } from "react-i18next";
 import { Sparkles, Award, Calendar, Clock, ArrowUp, BarChart3, ActivitySquare, TrendingUp, Droplets, ThumbsUp, Heart } from "lucide-react";
@@ -9,6 +9,18 @@ import { motion } from "framer-motion";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import { 
+  LineChart as RechartsLineChart, 
+  Line, 
+  AreaChart as RechartsAreaChart, 
+  Area, 
+  XAxis, 
+  YAxis, 
+  CartesianGrid, 
+  Tooltip, 
+  Legend,
+  ResponsiveContainer
+} from "recharts";
 
 // Health tip component
 const HealthTip = ({ title, description, icon: Icon }: { title: string, description: string, icon: React.ElementType }) => (
@@ -373,13 +385,54 @@ export default function Stats() {
                   transition={{ duration: 0.5 }}
                   className="h-full"
                 >
-                  <AreaChart 
-                    data={last7Days}
-                    index="name"
-                    categories={["count"]}
-                    valueFormatter={(value) => `${value} ${t('logs').toLowerCase()}`}
-                    showAnimation
-                  />
+                  <ResponsiveContainer width="100%" height="100%">
+                    <RechartsAreaChart
+                      data={last7Days}
+                      margin={{ top: 10, right: 10, left: 0, bottom: 0 }}
+                    >
+                      <defs>
+                        <linearGradient id="colorCount" x1="0" y1="0" x2="0" y2="1">
+                          <stop offset="5%" stopColor="var(--amber-500)" stopOpacity={0.8}/>
+                          <stop offset="95%" stopColor="var(--amber-500)" stopOpacity={0.1}/>
+                        </linearGradient>
+                      </defs>
+                      <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="var(--amber-200)" opacity={0.3} />
+                      <XAxis 
+                        dataKey="name" 
+                        tick={{ fill: 'var(--amber-700)', fontSize: 12 }}
+                        tickLine={false}
+                        axisLine={{ stroke: 'var(--amber-200)' }}
+                      />
+                      <YAxis 
+                        tick={{ fill: 'var(--amber-700)', fontSize: 12 }}
+                        tickLine={false}
+                        axisLine={{ stroke: 'var(--amber-200)' }}
+                        tickFormatter={(value: number) => `${value}`}
+                      />
+                      <Tooltip
+                        contentStyle={{ 
+                          backgroundColor: 'var(--amber-50)', 
+                          borderColor: 'var(--amber-200)',
+                          borderRadius: '8px',
+                          boxShadow: '0 4px 6px rgba(0,0,0,0.1)'
+                        }}
+                        labelStyle={{ color: 'var(--amber-900)', fontWeight: 'bold' }}
+                        itemStyle={{ color: 'var(--amber-700)' }}
+                        formatter={(value: number) => [`${value} ${t('logs').toLowerCase()}`, 'Logs']}
+                      />
+                      <Area 
+                        type="monotone" 
+                        dataKey="count" 
+                        stroke="var(--amber-500)" 
+                        fillOpacity={1}
+                        fill="url(#colorCount)"
+                        strokeWidth={3}
+                        activeDot={{ r: 8, strokeWidth: 0, fill: 'var(--amber-600)' }}
+                        animationDuration={1500}
+                        animationEasing="ease-in-out"
+                      />
+                    </RechartsAreaChart>
+                  </ResponsiveContainer>
                 </motion.div>
               </div>
               
@@ -618,13 +671,73 @@ export default function Stats() {
               transition={{ duration: 0.7 }}
               className="h-full"
             >
-              <LineChart 
-                data={last7Days}
-                index="name"
-                categories={["duration", "consistency"]}
-                valueFormatter={(value) => `${value}`}
-                showAnimation
-              />
+              <ResponsiveContainer width="100%" height="100%">
+                <RechartsLineChart
+                  data={last7Days}
+                  margin={{ top: 10, right: 10, left: 0, bottom: 0 }}
+                >
+                  <defs>
+                    <linearGradient id="colorDuration" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="5%" stopColor="var(--orange-500)" stopOpacity={0.8}/>
+                      <stop offset="95%" stopColor="var(--orange-500)" stopOpacity={0.1}/>
+                    </linearGradient>
+                    <linearGradient id="colorConsistency" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="5%" stopColor="var(--blue-500)" stopOpacity={0.8}/>
+                      <stop offset="95%" stopColor="var(--blue-500)" stopOpacity={0.1}/>
+                    </linearGradient>
+                  </defs>
+                  <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="var(--orange-200)" opacity={0.3} />
+                  <XAxis 
+                    dataKey="name" 
+                    tick={{ fill: 'var(--orange-700)', fontSize: 12 }}
+                    tickLine={false}
+                    axisLine={{ stroke: 'var(--orange-200)' }}
+                  />
+                  <YAxis 
+                    tick={{ fill: 'var(--orange-700)', fontSize: 12 }}
+                    tickLine={false}
+                    axisLine={{ stroke: 'var(--orange-200)' }}
+                  />
+                  <Tooltip
+                    contentStyle={{ 
+                      backgroundColor: 'var(--orange-50)', 
+                      borderColor: 'var(--orange-200)',
+                      borderRadius: '8px',
+                      boxShadow: '0 4px 6px rgba(0,0,0,0.1)'
+                    }}
+                    labelStyle={{ color: 'var(--orange-900)', fontWeight: 'bold' }}
+                    itemStyle={{ color: 'var(--orange-700)' }}
+                  />
+                  <Legend 
+                    wrapperStyle={{ paddingTop: 10 }}
+                    iconSize={10}
+                    iconType="circle"
+                  />
+                  <Line 
+                    type="monotone" 
+                    dataKey="duration" 
+                    name={t('duration')}
+                    stroke="var(--orange-500)" 
+                    strokeWidth={3}
+                    dot={{ fill: 'var(--orange-500)', r: 4, strokeWidth: 0 }}
+                    activeDot={{ r: 8, strokeWidth: 0, fill: 'var(--orange-600)' }}
+                    animationDuration={1500}
+                    animationEasing="ease-in-out"
+                  />
+                  <Line 
+                    type="monotone" 
+                    dataKey="consistency" 
+                    name={t('consistency')}
+                    stroke="var(--blue-500)" 
+                    strokeWidth={3}
+                    dot={{ fill: 'var(--blue-500)', r: 4, strokeWidth: 0 }}
+                    activeDot={{ r: 8, strokeWidth: 0, fill: 'var(--blue-600)' }}
+                    animationDuration={1500}
+                    animationEasing="ease-in-out"
+                    animationBegin={300}
+                  />
+                </RechartsLineChart>
+              </ResponsiveContainer>
             </motion.div>
           </div>
           
