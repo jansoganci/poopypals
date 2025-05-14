@@ -1,7 +1,7 @@
 import express, { type Request, Response, NextFunction } from "express";
 import { registerRoutes } from "./routes";
 import { setupVite, serveStatic, log } from "./vite";
-import { initializeChallenges } from "./challengeUtils";
+import { initializeChallenges, assignRandomChallenges } from "./challengeUtils";
 
 const app = express();
 app.use(express.json());
@@ -81,5 +81,16 @@ app.use((req, res, next) => {
     initializeChallenges().catch(err => {
       console.error('Failed to initialize challenges:', err);
     });
+    
+    // Assign a starter challenge to user 1 (demo user)
+    setTimeout(async () => {
+      try {
+        const userId = 1;
+        await assignRandomChallenges(userId);
+        console.log("Assigned starter challenges to user 1");
+      } catch (err) {
+        console.error('Failed to assign starter challenges:', err);
+      }
+    }, 2000); // Small delay to ensure challenges are initialized first
   });
 })();
