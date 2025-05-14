@@ -5,6 +5,7 @@ interface PoopContextType {
   logs: PoopLogData[];
   achievements: AchievementData[];
   stats: StatsData;
+  setStats: (stats: StatsData) => void;
   addLog: (logData: Omit<PoopLogData, 'id'>) => void;
   addAchievement: (achievementData: Omit<AchievementData, 'id'>) => void;
 }

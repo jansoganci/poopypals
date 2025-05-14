@@ -94,7 +94,32 @@ const resources = {
       "your_personality": "Your Poop Personality",
       "next_question": "Next Question",
       "see_results": "See Results",
-      "take_again": "Take Quiz Again"
+      "take_again": "Take Quiz Again",
+      
+      // Challenges
+      "todays_challenges": "Today's Challenges",
+      "no_challenges": "No active challenges",
+      "log_to_get_challenges": "Log a poop to get new challenges",
+      "challenge_fetch_error": "Couldn't load challenges",
+      "challenge_completed": "Challenge Completed!",
+      "error": "Error",
+      "daily": "Daily",
+      "streak": "Streak",
+      "achievement": "Achievement",
+      "collect_achievements": "Collect them all to earn Flush Funds",
+      "discover_personality": "Discover Your Poop Personality!",
+      "take_quiz_description": "Take our quiz to unlock special achievements and learn health tips",
+      "retake_quiz_hint": "Click to retake the quiz and explore other personalities",
+      "premium_themes": "Premium Themes",
+      "customize_app": "Customize your app",
+      "toilet_game": "Toilet Tapper Game",
+      "unlock_game": "Unlock a new toilet game",
+      "premium_status": "Premium Status",
+      "premium_features": "No ads + extra features",
+      "advanced_analytics": "Advanced Analytics",
+      "health_insights": "Detailed health insights",
+      "custom_achievements": "Custom Achievements",
+      "create_goals": "Create your own goals"
     }
   },
   es: {

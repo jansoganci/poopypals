@@ -26,8 +26,10 @@ export default function DailyChallenges() {
     const fetchChallenges = async () => {
       try {
         setLoading(true);
-        const data = await apiRequest<UserChallengeData[]>('/api/user-challenges', 'GET');
-        setChallenges(data);
+        const response = await apiRequest('/api/user-challenges', 'GET');
+        // Ensure the response is an array, or default to empty array
+        const data = Array.isArray(response) ? response : [];
+        setChallenges(data as UserChallengeData[]);
       } catch (error) {
         console.error('Error fetching challenges:', error);
         toast({
@@ -114,11 +116,12 @@ export default function DailyChallenges() {
               <p className="text-sm text-gray-600 mb-3">{challenge.challenge.description}</p>
               
               <div className="flex items-center justify-between text-sm">
-                <Progress 
-                  value={(challenge.progress / challenge.challenge.conditionTarget) * 100} 
-                  className="h-2 w-full mr-4 bg-gray-100"
-                  indicatorClassName="bg-amber-500"
-                />
+                <div className="w-full mr-4">
+                  <Progress 
+                    value={(challenge.progress / challenge.challenge.conditionTarget) * 100} 
+                    className="h-2 bg-gray-100"
+                  />
+                </div>
                 <div className="flex items-center whitespace-nowrap">
                   <span className="font-semibold">{challenge.progress}/{challenge.challenge.conditionTarget}</span>
                   <span className="ml-1 text-amber-800">+{challenge.challenge.rewardAmount} FF</span>
