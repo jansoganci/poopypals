@@ -2,15 +2,17 @@ import { Card, CardContent } from "@/components/ui/card";
 import { ChevronRight } from "lucide-react";
 import { usePoopContext } from "@/context/PoopContext";
 import { format, differenceInDays } from "date-fns";
+import { useTranslation } from "react-i18next";
 
 export default function RecentActivity() {
   const { logs, achievements } = usePoopContext();
+  const { t } = useTranslation();
   
   const formatRelativeDate = (date: Date) => {
     const days = differenceInDays(new Date(), date);
-    if (days === 0) return "Today";
-    if (days === 1) return "Yesterday";
-    return `${days} days ago`;
+    if (days === 0) return t('today');
+    if (days === 1) return t('yesterday');
+    return `${days} ${t('streak').toLowerCase()}`;
   };
   
   // Combine logs and achievements and sort by date
@@ -29,7 +31,7 @@ export default function RecentActivity() {
   
   return (
     <div className="mx-4 my-6">
-      <h2 className="text-xl font-bold text-secondary mb-3">Recent Activity</h2>
+      <h2 className="text-xl font-bold text-secondary mb-3">{t('recent_activity')}</h2>
       <Card className="overflow-hidden">
         <CardContent className="p-0">
           <ul className="divide-y divide-gray-200">
@@ -42,11 +44,11 @@ export default function RecentActivity() {
                   <p className="font-semibold text-gray-800">
                     {activity.type === 'log' 
                       ? `${formatRelativeDate(activity.date)}, ${format(activity.date, 'h:mm a')}`
-                      : 'Achievement Unlocked!'}
+                      : t('achievements_unlocked', { count: 1 })}
                   </p>
                   <p className="text-gray-500 text-sm">
                     {activity.type === 'log'
-                      ? `Duration: ${activity.data.duration} minutes • Rating: ${activity.data.rating.charAt(0).toUpperCase() + activity.data.rating.slice(1)}`
+                      ? `${t('duration')}: ${activity.data.duration} ${t('minutes')} • ${t('rating')}: ${activity.data.rating.charAt(0).toUpperCase() + activity.data.rating.slice(1)}`
                       : activity.data.description}
                   </p>
                 </div>
@@ -56,7 +58,7 @@ export default function RecentActivity() {
             
             {activities.length === 0 && (
               <li className="p-4 text-center text-gray-500">
-                No recent activity. Start logging!
+                {t('loading')}
               </li>
             )}
           </ul>

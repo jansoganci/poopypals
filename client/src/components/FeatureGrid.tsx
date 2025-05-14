@@ -1,29 +1,33 @@
 import FeatureCard from "./FeatureCard";
 import { MapPin, Clock, Trophy, Brain } from "lucide-react";
+import { useTranslation } from "react-i18next";
 
 export default function FeatureGrid() {
-  const features = [
+  const { t } = useTranslation();
+  
+  // These titles can be translated using translation keys
+  const getFeatures = () => [
     {
-      title: "Find Bathroom",
-      subtitle: "3 nearby",
+      title: t('nav_home'),
+      subtitle: "3 " + t('nav_stats').toLowerCase(),
       icon: <MapPin />,
       color: "bg-blue-100 text-info"
     },
     {
-      title: "Toilet Games",
-      subtitle: "Play & Earn",
+      title: t('log_title'),
+      subtitle: t('take_quiz'),
       icon: <Clock />,
       color: "bg-purple-100 text-purple-500"
     },
     {
-      title: "Achievements",
-      subtitle: "12 Earned",
+      title: t('achievements'),
+      subtitle: "12 " + t('unlocked').toLowerCase(),
       icon: <Trophy />,
       color: "bg-green-100 text-success"
     },
     {
-      title: "Poop AI",
-      subtitle: "Health Insights",
+      title: t('personality_quiz'),
+      subtitle: t('health_tip'),
       icon: <Brain />,
       color: "bg-red-100 text-danger"
     }
@@ -31,7 +35,7 @@ export default function FeatureGrid() {
 
   return (
     <div className="grid grid-cols-2 gap-4 mx-4 my-4">
-      {features.map((feature, index) => (
+      {getFeatures().map((feature, index) => (
         <FeatureCard
           key={index}
           title={feature.title}
