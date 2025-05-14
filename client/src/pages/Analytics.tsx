@@ -578,7 +578,7 @@ const DurationAnalysis = ({ logs }: { logs: any[] }) => {
               <div className="flex justify-between items-start">
                 <div>
                   <h3 className="text-sm font-medium text-muted-foreground">
-                    {t('average_duration')}
+                    {t('advanced_avg_duration')}
                   </h3>
                   <div className="text-3xl font-bold mt-1">{avgDuration}</div>
                   <div className="text-xs text-muted-foreground">{t('minutes').toLowerCase()}</div>
