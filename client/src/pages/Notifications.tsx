@@ -7,6 +7,7 @@ import RemindersManager from '@/components/RemindersManager';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { apiRequest } from '@/lib/queryClient';
 import { toast } from '@/hooks/use-toast';
+import NotificationPreferences from '@/components/NotificationPreferences';
 
 interface NotificationPreferences {
   id: number;
@@ -65,65 +66,8 @@ export default function NotificationsPage() {
         
         <TabsContent value="preferences" className="mt-6">
           <div className="space-y-6">
-            <div className="border rounded-lg p-4 space-y-4">
-              <h2 className="text-xl font-semibold mb-4">{t('notification_settings')}</h2>
-              
-              {isLoading ? (
-                <div className="py-4">{t('loading_notifications')}</div>
-              ) : preferences ? (
-                <>
-                  <div className="flex items-center justify-between py-2">
-                    <div>
-                      <Label htmlFor="achievement-notifications" className="font-medium">{t('achievement_notifications')}</Label>
-                      <p className="text-sm text-muted-foreground">{t('achievement_notifications_description')}</p>
-                    </div>
-                    <Switch 
-                      id="achievement-notifications" 
-                      checked={preferences.achievementNotifications}
-                      onCheckedChange={(checked) => handleToggle('achievementNotifications', checked)}
-                    />
-                  </div>
-                  
-                  <div className="flex items-center justify-between py-2">
-                    <div>
-                      <Label htmlFor="streak-notifications" className="font-medium">{t('streak_notifications')}</Label>
-                      <p className="text-sm text-muted-foreground">{t('streak_notifications_description')}</p>
-                    </div>
-                    <Switch 
-                      id="streak-notifications" 
-                      checked={preferences.streakNotifications}
-                      onCheckedChange={(checked) => handleToggle('streakNotifications', checked)}
-                    />
-                  </div>
-                  
-                  <div className="flex items-center justify-between py-2">
-                    <div>
-                      <Label htmlFor="reminder-notifications" className="font-medium">{t('reminder_notifications')}</Label>
-                      <p className="text-sm text-muted-foreground">{t('reminder_notifications_description')}</p>
-                    </div>
-                    <Switch 
-                      id="reminder-notifications" 
-                      checked={preferences.reminderNotifications}
-                      onCheckedChange={(checked) => handleToggle('reminderNotifications', checked)}
-                    />
-                  </div>
-                  
-                  <div className="flex items-center justify-between py-2">
-                    <div>
-                      <Label htmlFor="push-notifications" className="font-medium">{t('push_notifications')}</Label>
-                      <p className="text-sm text-muted-foreground">{t('push_notifications_description')}</p>
-                    </div>
-                    <Switch 
-                      id="push-notifications" 
-                      checked={preferences.pushNotifications}
-                      onCheckedChange={(checked) => handleToggle('pushNotifications', checked)}
-                    />
-                  </div>
-                </>
-              ) : (
-                <div>{t('error_loading_preferences')}</div>
-              )}
-            </div>
+            {/* Enhanced notification preferences component */}
+            <NotificationPreferences />
           </div>
         </TabsContent>
         

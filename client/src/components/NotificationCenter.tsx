@@ -8,34 +8,28 @@ import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
 import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
-
-interface Notification {
-  id: number;
-  title: string;
-  message: string;
-  type: 'achievement' | 'streak' | 'reminder' | 'system' | 'tip';
-  isRead: boolean;
-  createdAt: string;
-  iconPath?: string;
-  actionPath?: string;
-  expiresAt?: string;
-}
+import { Notification, fetchNotifications, markAsRead, markAllAsRead, startAutomaticNotifications } from '@/lib/mockNotificationService';
+import { useNotificationToast } from './NotificationToast';
 
 export default function NotificationCenter() {
   const { t } = useTranslation();
   const [open, setOpen] = useState(false);
   const queryClient = useQueryClient();
+  const { showNotification } = useNotificationToast();
   
-  // Fetch notifications
+  // Fetch notifications from mock service
   const { data: notifications = [], isLoading } = useQuery<Notification[]>({
     queryKey: ['/api/notifications'],
+    queryFn: fetchNotifications,
     refetchInterval: 60000, // Refetch every minute
   });
   
   // Mark notification as read
   const markAsReadMutation = useMutation({
     mutationFn: async (id: number) => {
-      return apiRequest(`/api/notifications/${id}/read`, 'PATCH');
+      // Use mock service instead of real API
+      await markAsRead(id);
+      return { success: true };
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['/api/notifications'] });
@@ -45,7 +39,9 @@ export default function NotificationCenter() {
   // Mark all as read
   const markAllAsReadMutation = useMutation({
     mutationFn: async () => {
-      return apiRequest('/api/notifications/read-all', 'PATCH');
+      // Use mock service instead of real API
+      await markAllAsRead();
+      return { success: true };
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['/api/notifications'] });
@@ -55,6 +51,20 @@ export default function NotificationCenter() {
   
   // Count unread notifications
   const unreadCount = notifications.filter((note: Notification) => !note.isRead).length;
+  
+  // Start automatic notification generation (for demo purposes)
+  useEffect(() => {
+    const stopAutomaticNotifications = startAutomaticNotifications((newNotification) => {
+      // Show toast notification for new notifications
+      showNotification(newNotification);
+      
+      // Refresh the notification list
+      queryClient.invalidateQueries({ queryKey: ['/api/notifications'] });
+    });
+    
+    // Clean up on unmount
+    return () => stopAutomaticNotifications();
+  }, [queryClient, showNotification]);
   
   // If popover is opened and there are unread notifications, mark them as read
   useEffect(() => {
