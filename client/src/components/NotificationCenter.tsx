@@ -13,11 +13,12 @@ interface Notification {
   id: number;
   title: string;
   message: string;
-  type: 'achievement' | 'streak' | 'reminder' | 'system';
+  type: 'achievement' | 'streak' | 'reminder' | 'system' | 'tip';
   isRead: boolean;
   createdAt: string;
   iconPath?: string;
   actionPath?: string;
+  expiresAt?: string;
 }
 
 export default function NotificationCenter() {
@@ -84,7 +85,13 @@ export default function NotificationCenter() {
   };
   
   // Get notification icon based on type
-  const getNotificationIcon = (type: string) => {
+  const getNotificationIcon = (type: string, emoji?: string) => {
+    // If the notification has an emoji included in the content, use that
+    if (emoji && emoji.length > 0) {
+      return emoji;
+    }
+    
+    // Otherwise use default icons based on type
     switch (type) {
       case 'achievement':
         return '🏆';
@@ -92,6 +99,8 @@ export default function NotificationCenter() {
         return '🔥';
       case 'reminder':
         return '⏰';
+      case 'tip':
+        return '💡';
       case 'system':
       default:
         return '📣';
@@ -150,13 +159,21 @@ export default function NotificationCenter() {
                   )}
                 >
                   <div className="flex gap-3">
-                    <div className="flex-shrink-0 text-lg">
-                      {notification.iconPath || getNotificationIcon(notification.type)}
+                    <div className="flex-shrink-0 text-2xl">
+                      {(() => {
+                        // Extract emoji from title if present (common pattern in our templates)
+                        const emojiMatch = notification.title.match(/([^\w\s])\s?/);
+                        const emoji = emojiMatch ? emojiMatch[1] : undefined;
+                        
+                        return notification.iconPath || 
+                          getNotificationIcon(notification.type, emoji);
+                      })()}
                     </div>
                     <div className="flex-1 min-w-0">
                       <div className="flex justify-between items-start gap-2">
                         <h4 className={cn("font-medium text-sm", !notification.isRead && "font-semibold")}>
-                          {notification.title}
+                          {/* Clean title of emoji if present */}
+                          {notification.title.replace(/([^\w\s])\s?/, '')}
                         </h4>
                         <span className="text-xs text-muted-foreground whitespace-nowrap">
                           {formatRelativeTime(notification.createdAt)}
@@ -165,6 +182,22 @@ export default function NotificationCenter() {
                       <p className="text-sm text-muted-foreground line-clamp-2 mt-1">
                         {notification.message}
                       </p>
+                      
+                      {/* Show badge for notification type */}
+                      <div className="mt-2 flex items-center gap-2">
+                        <Badge 
+                          variant="outline"
+                          className={cn(
+                            "text-xs py-0 h-5",
+                            notification.type === 'achievement' && "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300",
+                            notification.type === 'streak' && "bg-amber-100 text-amber-800 dark:bg-amber-900 dark:text-amber-300",
+                            notification.type === 'reminder' && "bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-300",
+                            notification.type === 'tip' && "bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-300"
+                          )}
+                        >
+                          {t(notification.type)}
+                        </Badge>
+                      </div>
                       
                       {!notification.isRead && (
                         <div className="flex justify-end mt-2">

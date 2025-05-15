@@ -440,6 +440,56 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Initialize notification templates
+  try {
+    await initializeNotificationTemplates();
+    console.log("Notification templates initialized");
+  } catch (error) {
+    console.error("Error initializing notification templates:", error);
+  }
+
+  // Setup notification processing interval (every 5 minutes)
+  setInterval(async () => {
+    try {
+      await processExpiredNotifications();
+    } catch (error) {
+      console.error("Error processing notifications:", error);
+    }
+  }, 5 * 60 * 1000);
+
+  // Schedule notifications for demo user (ID 1)
+  // In a real app, this would be triggered after user logs in
+  setInterval(async () => {
+    try {
+      await scheduleNotifications(1);
+    } catch (error) {
+      console.error("Error scheduling notifications:", error);
+    }
+  }, 15 * 60 * 1000); // Check every 15 minutes
+  
+  // Process user notifications on log creation
+  app.post('/api/schedule-notifications', async (req, res) => {
+    try {
+      const userId = req.body.userId || 1; // Default to user 1 for demo
+      await scheduleNotifications(userId);
+      res.json({ success: true });
+    } catch (error) {
+      console.error("Error manually scheduling notifications:", error);
+      res.status(500).json({ error: "Failed to schedule notifications" });
+    }
+  });
+
+  // API route for notification templates
+  app.get('/api/notification-templates', async (req, res) => {
+    try {
+      const templates = await storage.getAllNotificationTemplates();
+      res.json(templates);
+    } catch (error) {
+      console.error("Error fetching notification templates:", error);
+      res.status(500).json({ error: "Failed to fetch notification templates" });
+    }
+  });
+
   const httpServer = createServer(app);
   return httpServer;
 }

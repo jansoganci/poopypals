@@ -517,7 +517,7 @@ export class DatabaseStorage implements IStorage {
       .where(
         and(
           eq(notifications.userId, userId),
-          eq(notifications.type, type)
+          eq(notifications.type, type as any)
         )
       )
       .orderBy(desc(notifications.createdAt))
@@ -550,7 +550,7 @@ export class DatabaseStorage implements IStorage {
     return db
       .select()
       .from(notificationTemplates)
-      .where(eq(notificationTemplates.type, type));
+      .where(eq(notificationTemplates.type, type as any));
   }
 
   // Notification preferences methods
