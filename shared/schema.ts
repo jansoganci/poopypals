@@ -165,7 +165,7 @@ export type InsertUserAvatar = z.infer<typeof insertUserAvatarSchema>;
 
 // Notification & Reminder Schema
 export const reminderFrequencyEnum = pgEnum('reminder_frequency', ['daily', 'weekly', 'custom']);
-export const notificationTypeEnum = pgEnum('notification_type', ['achievement', 'streak', 'reminder', 'system']);
+export const notificationTypeEnum = pgEnum('notification_type', ['achievement', 'streak', 'reminder', 'system', 'tip']);
 
 export const notifications = pgTable("notifications", {
   id: serial("id").primaryKey(),
@@ -204,6 +204,17 @@ export const reminders = pgTable("reminders", {
   isActive: boolean("is_active").notNull().default(true),
   createdAt: timestamp("created_at").notNull().defaultNow(),
   updatedAt: timestamp("updated_at").notNull().defaultNow()
+});
+
+export const notificationTemplates = pgTable("notification_templates", {
+  id: serial("id").primaryKey(),
+  templateId: varchar("template_id", { length: 100 }).notNull().unique(),
+  title: varchar("title", { length: 100 }).notNull(),
+  body: text("body").notNull(),
+  type: notificationTypeEnum("type").notNull(),
+  emoji: varchar("emoji", { length: 10 }).notNull(),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+  updatedAt: timestamp("updated_at").notNull().defaultNow(),
 });
 
 // Insert schemas
@@ -251,10 +262,20 @@ export const insertReminderSchema = createInsertSchema(reminders, {
 });
 
 // Types
+export const insertNotificationTemplateSchema = createInsertSchema(notificationTemplates).pick({
+  templateId: true,
+  title: true,
+  body: true,
+  type: true,
+  emoji: true
+});
+
 export type Notification = typeof notifications.$inferSelect;
 export type NotificationPreferences = typeof notificationPreferences.$inferSelect;
 export type Reminder = typeof reminders.$inferSelect;
+export type NotificationTemplate = typeof notificationTemplates.$inferSelect;
 
 export type InsertNotification = z.infer<typeof insertNotificationSchema>;
 export type InsertNotificationPreferences = z.infer<typeof insertNotificationPreferencesSchema>;
 export type InsertReminder = z.infer<typeof insertReminderSchema>;
+export type InsertNotificationTemplate = z.infer<typeof insertNotificationTemplateSchema>;

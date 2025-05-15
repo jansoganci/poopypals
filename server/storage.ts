@@ -61,6 +61,15 @@ export interface IStorage {
   markNotificationAsRead(id: number): Promise<Notification>;
   markAllUserNotificationsAsRead(userId: number): Promise<void>;
   deleteNotification(id: number): Promise<void>;
+  getExpiredNotifications(beforeDate: Date): Promise<Notification[]>;
+  markNotificationAsProcessed(id: number): Promise<Notification>;
+  getUserLastNotificationByType(userId: number, type: string): Promise<Notification | undefined>;
+  
+  // Notification Template methods
+  createNotificationTemplate(templateData: InsertNotificationTemplate): Promise<NotificationTemplate>;
+  getNotificationTemplateById(templateId: string): Promise<NotificationTemplate | undefined>;
+  getAllNotificationTemplates(): Promise<NotificationTemplate[]>;
+  getNotificationTemplatesByType(type: string): Promise<NotificationTemplate[]>;
   
   // Notification preferences methods
   getUserNotificationPreferences(userId: number): Promise<NotificationPreferences | undefined>;
