@@ -2,6 +2,7 @@ import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import { checkChallengeProgress, assignRandomChallenges } from "./challengeUtils";
+import { initializeNotificationTemplates, scheduleNotifications, processExpiredNotifications } from "./notificationService";
 
 // Import validation schemas
 import { 

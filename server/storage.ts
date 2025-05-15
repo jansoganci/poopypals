@@ -1,7 +1,7 @@
 import { 
   users, poopLogs, achievements, challenges, userChallenges,
   avatarComponents, userAvatarComponents, userAvatars,
-  notifications, notificationPreferences, reminders,
+  notifications, notificationPreferences, reminders, notificationTemplates,
   type User, type InsertUser, type PoopLog, type Achievement,
   type Challenge, type InsertChallenge, type UserChallenge, type InsertUserChallenge,
   type AvatarComponent, type InsertAvatarComponent, 
@@ -9,7 +9,8 @@ import {
   type UserAvatar, type InsertUserAvatar,
   type Notification, type InsertNotification,
   type NotificationPreferences, type InsertNotificationPreferences,
-  type Reminder, type InsertReminder
+  type Reminder, type InsertReminder,
+  type NotificationTemplate, type InsertNotificationTemplate
 } from "@shared/schema";
 import { db } from "./db";
 import { eq, desc, and, gte, lte, sql } from "drizzle-orm";
@@ -483,6 +484,73 @@ export class DatabaseStorage implements IStorage {
     await db
       .delete(notifications)
       .where(eq(notifications.id, id));
+  }
+  
+  async getExpiredNotifications(beforeDate: Date): Promise<Notification[]> {
+    return db
+      .select()
+      .from(notifications)
+      .where(
+        and(
+          sql`${notifications.expiresAt} IS NOT NULL`,
+          lte(notifications.expiresAt, beforeDate)
+        )
+      );
+  }
+
+  async markNotificationAsProcessed(id: number): Promise<Notification> {
+    const [notification] = await db
+      .update(notifications)
+      .set({ 
+        isRead: true,
+        expiresAt: null
+      })
+      .where(eq(notifications.id, id))
+      .returning();
+    return notification;
+  }
+
+  async getUserLastNotificationByType(userId: number, type: string): Promise<Notification | undefined> {
+    const [notification] = await db
+      .select()
+      .from(notifications)
+      .where(
+        and(
+          eq(notifications.userId, userId),
+          eq(notifications.type, type)
+        )
+      )
+      .orderBy(desc(notifications.createdAt))
+      .limit(1);
+    return notification;
+  }
+  
+  // Notification Template methods
+  async createNotificationTemplate(templateData: InsertNotificationTemplate): Promise<NotificationTemplate> {
+    const [template] = await db
+      .insert(notificationTemplates)
+      .values(templateData)
+      .returning();
+    return template;
+  }
+
+  async getNotificationTemplateById(templateId: string): Promise<NotificationTemplate | undefined> {
+    const [template] = await db
+      .select()
+      .from(notificationTemplates)
+      .where(eq(notificationTemplates.templateId, templateId));
+    return template;
+  }
+
+  async getAllNotificationTemplates(): Promise<NotificationTemplate[]> {
+    return db.select().from(notificationTemplates);
+  }
+
+  async getNotificationTemplatesByType(type: string): Promise<NotificationTemplate[]> {
+    return db
+      .select()
+      .from(notificationTemplates)
+      .where(eq(notificationTemplates.type, type));
   }
 
   // Notification preferences methods
