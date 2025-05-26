@@ -8,6 +8,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { apiRequest } from '@/lib/queryClient';
 import { toast } from '@/hooks/use-toast';
 import NotificationPreferences from '@/components/NotificationPreferences';
+import PushNotificationDemo from '@/components/PushNotificationDemo';
 
 interface NotificationPreferences {
   id: number;
@@ -68,6 +69,11 @@ export default function NotificationsPage() {
           <div className="space-y-6">
             {/* Enhanced notification preferences component */}
             <NotificationPreferences />
+            
+            {/* Push notification demo */}
+            <div className="mt-8">
+              <PushNotificationDemo />
+            </div>
           </div>
         </TabsContent>
         
